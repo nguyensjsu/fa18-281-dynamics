@@ -24,3 +24,5 @@ Responsibilities:
 - Ujjval Soni
 - Prajwal Venkatesh
 - Shivam Waghela
+  - Implement Users API
+  - DB - MongoDB cluster
