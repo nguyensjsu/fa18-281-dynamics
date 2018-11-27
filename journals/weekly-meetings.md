@@ -20,7 +20,10 @@ Responsibilities:
   - Implement Payment API
   - DB - MongoDB cluster
   - Kubernetes Horizontal Pod Autoscaling research
-- Pavan Kumar
+- Pavan Kumar Shekar
+  -Implement Riak Cluster
+  -Implement CART API
+  -Intigrate with other Microservices (Inventory and Payment)
 - Ujjval Soni
 - Prajwal Venkatesh
 - Shivam Waghela
