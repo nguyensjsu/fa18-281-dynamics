@@ -1,0 +1,126 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.btn-login {
+  background-color: #ff8a00;
+  border-color: #ff8a00;
+  color: #ffffff;
+}
+
+.btn-search {
+  background-color: #0067db;
+  border-color: #0067db;
+  color: #ffffff;
+  border-radius: 50px;
+}
+
+#homepage-nav {
+  transition: opacity 300ms ease-in-out 0s;
+  opacity: 1;
+  background: transparent;
+  background-color: beige;
+}
+
+.list-property-parent .nav-link.active {
+  background-color: #ffffff;
+  color: #222;
+}
+.list-property-parent .nav-link {
+  color: #222;
+}
+.list-property-parent .nav-link:hover {
+  text-decoration: underline;
+}
+.prop-component-parent {
+  padding: 25px;
+  /* border: 1px solid black; */
+  background-color: #fff;
+  box-shadow: 2px 10px 32px -5px #d6d9d6;
+}
+.prop-component-header {
+  /* text-align: center; */
+  padding-top: 25px;
+  padding-left: 0px;
+}
+.landing-parent .react-datepicker__input-container input {
+  border: none;
+}
+.landing-parent .input-parent {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.landing-parent .input-parent input {
+  height: 56px;
+}
+.landing-parent .landing-header {
+  color: #fff;
+}
+.landing-parent .form-group {
+  margin-right: 15px;
+}
+.landing-parent {
+  min-height: 78vh;
+  display: flex;
+}
+.input-data-parent {
+  margin-left: 0px;
+}
+.landing-component {
+  margin: auto;
+}
+
+.login-form {
+  margin: auto;
+  width: 40%;
+}
+#login-page-headline {
+  text-align: center;
+}
+#property-image {
+  width: 300px;
+}
+#login-btn {
+  background: transparent;
+  border: none;
+  margin-right: 200px;
+  box-shadow: inset 0 0 0 1px #0073b1, inset 0 0 0 2px transparent,
+    inset 0 0 0 1px transparent;
+}
+#logout-btn {
+  background: white;
+  color: black;
+  border: none;
+}
+#list-your-prop-btn {
+  background-color: #fff;
+  border-color: #fff;
+  color: #0067db;
+  border-radius: 50px;
+  padding-right: 40px;
+  padding-left: 40px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
