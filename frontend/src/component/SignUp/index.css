@@ -1,0 +1,13 @@
+.login-form {
+  margin: auto;
+  width: 40%;
+}
+
+#login-page-headline {
+  text-align: center;
+}
+
+#login-btn {
+  background: transparent;
+  border: none;
+}

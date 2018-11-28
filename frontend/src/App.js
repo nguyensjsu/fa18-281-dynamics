@@ -6,7 +6,9 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <Main />
+        <div>
+          <Main />
+        </div>
       </BrowserRouter>
     );
   }

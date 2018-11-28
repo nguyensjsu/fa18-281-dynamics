@@ -11,19 +11,15 @@ class Navbar extends Component {
         <nav id="homepage-nav" className="navbar navbar-default">
           <div className="container-fluid">
             <div className="navbar-header">
-              <a href="/" alt="homepage">
+              <Link to="/" alt="homepage">
                 <img src={logo} className="navbar-brand App-logo" alt="logo" />
-              </a>
+              </Link>
             </div>
             <ul className="nav navbar-right">
               <Link to="/login">
                 <button
                   id="login-btn"
                   className="btn btn-primary"
-                  type="button"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
                   style={{ color: "#0067db" }}
                 >
                   Login
