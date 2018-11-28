@@ -1,0 +1,1 @@
+This is a folder to keep track of proceedings of the cart microservice and will have the documentation and snapshots of the cart API
