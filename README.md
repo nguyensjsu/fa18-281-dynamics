@@ -3,13 +3,12 @@
 Team Hackathon Project repository for Fall 2018 CMPE 281 course in SJSU with professor Paul Nguyen.
 
 ## Team Members
- - [Shivam Waghela](https://github.com/shivamwaghela)
- - [Clifton Francis](https://github.com/clif)
- - [Ujjval Soni](https://github.com/ujjvalsoni)
- - [Pavan Kumar Shekar](https://github.com/pavankumarshekar)
- - [Prajwal Venkatesh](https://github.com/prajwalv)
- 
 
+- [Shivam Waghela](https://github.com/shivamwaghela)
+- [Clifton Francis](https://github.com/clif)
+- [Ujjval Soni](https://github.com/ujjvalsoni)
+- [Pavan Kumar Shekar](https://github.com/pavankumarshekar)
+- [Prajwal Venkatesh](https://github.com/prajwalv)
 
 The repo has the following structure:
 
@@ -17,3 +16,16 @@ The repo has the following structure:
 - doc - All project documentation and diagrams
 - code - Project code
 
+## Steps to Run the App
+
+Go to the frontend directory
+
+    cd frontend
+
+Install all the required packages
+
+    npm i
+
+Run the React Server
+
+    npm start
