@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../Navbar";
 import "./index.css";
 
 class Login extends Component {
@@ -29,9 +28,6 @@ class Login extends Component {
   render() {
     return (
       <div>
-        <div>
-          <Navbar />
-        </div>
         <div id="login-page-headline" className="container">
           <h2>Log in to Shayona Grocery Store</h2>
           <br />

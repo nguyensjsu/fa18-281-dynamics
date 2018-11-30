@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
 import "./index.css";
-import Navbar from "../Navbar";
 
 class SignUp extends Component {
   constructor(props) {
@@ -42,9 +41,6 @@ class SignUp extends Component {
     return (
       <div>
         {this.state.regFlag && <Redirect to={{ pathname: "/login" }} />}
-        <div>
-          <Navbar />
-        </div>
         <div className="container">
           <h4
             style={{
