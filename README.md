@@ -7,7 +7,7 @@ Team Hackathon Project repository for Fall 2018 CMPE 281 course in SJSU with pro
  - [Clifton Francis](https://github.com/clif)
  - [Ujjval Soni](https://github.com/ujjvalsoni)
  - [Pavan Kumar Shekar](https://github.com/pavankumarshekar)
- - [Prajwal Venkatesh]()
+ - [Prajwal Venkatesh](https://github.com/prajwalv)
  
 
 
