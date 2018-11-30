@@ -25,6 +25,10 @@ Responsibilities:
   -Implement CART API
   -Intigrate with other Microservices (Inventory and Payment)
 - Ujjval Soni
+  -Implement the Reviews API (which also includes the maintaining sessions)
+  - DB - MongoDB cluster (not sure, might change to Riak cluster in the future based on the needs of the project)
+  -Prepare a frontend for the to add and view reviews, will be using the inventory frontend as a base and built upon the same.
+  -Updating the on the Kanban board for the tasks.
 - Prajwal Venkatesh
 - Shivam Waghela
   - Implement Users API
