@@ -1,0 +1,68 @@
+#title {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: darkslategrey;
+}
+
+.grocery-item {
+  border-radius: 6px;
+}
+
+.quantity input {
+  width: 45px;
+  height: 26px;
+}
+
+.item {
+  display: inline-block;
+  text-align: center;
+}
+
+.name {
+  font-weight: 700;
+}
+
+.quantity {
+}
+
+.inventory {
+}
+
+.rate {
+  color: #b12704;
+  font-weight: 700;
+}
+
+.subtotal {
+}
+
+.quantity-header {
+}
+
+.name-header {
+  width: 392px;
+  font-weight: 700;
+}
+
+.inventory-header {
+}
+
+.rate-header {
+  color: #b12704;
+  font-weight: 700;
+}
+
+.subtotal-header {
+}
+.total-row {
+  font-weight: 700;
+  padding: 20px;
+}
+.item-count {
+  display: inline-block;
+  text-align: center;
+}
+.item-total {
+  display: inline-block;
+  text-align: center;
+}
