@@ -124,7 +124,7 @@ class Inventory extends Component {
               Total Items: {this.state.itemCount}
             </div>
             <div className="item-total col-lg-2">
-              Total: ${this.state.total}
+              Order total: ${this.state.total}
             </div>
           </div>
           <div className="total-row row">
