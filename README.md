@@ -24,7 +24,7 @@ Go to the frontend directory
 
 Install all the required packages
 
-    npm i
+    npm install
 
 Run the React Server
 
