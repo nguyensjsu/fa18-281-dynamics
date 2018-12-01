@@ -1,0 +1,47 @@
+.item-name {
+  margin: 10px 0px 20px 0px;
+  font-weight: 500;
+  font-size: 2em;
+}
+
+.description {
+  margin: 0px 20px 20px 20px;
+  font-size: 1em;
+}
+
+.reviews {
+  font-weight: 500;
+  font-size: 1.2em;
+}
+
+.ratings {
+  height: 100vh;
+}
+
+.heading {
+  font-size: 20px;
+}
+
+.all-review {
+  height: 100vh;
+}
+
+.user-review {
+  margin-top: 10px;
+}
+.user-name {
+  font-size: 13px;
+  font-family: "Amazon Ember", Arial, sans-serif;
+}
+
+.user-review-summary {
+  font-weight: 700;
+  font-size: 13px;
+}
+.user-review-rating {
+  font-size: 13px;
+}
+
+.user-review-details {
+  font-size: 13px;
+}
