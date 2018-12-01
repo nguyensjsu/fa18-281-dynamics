@@ -1,10 +1,98 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import uniqid from "uniqid";
 import "./index.css";
 
 class Inventory extends Component {
+  constructor() {
+    super();
+    this.state = {
+      inventory: [
+        {
+          id: 1,
+          name: "Cereals",
+          rate: 10.95,
+          inventory: 53,
+          quantity: 0,
+          subtotal: 0
+        },
+        {
+          id: 2,
+          name: "Bread",
+          rate: 3.99,
+          inventory: 11,
+          quantity: 0,
+          subtotal: 0
+        },
+        {
+          id: 3,
+          name: "Milk",
+          rate: 3.16,
+          inventory: 20,
+          quantity: 0,
+          subtotal: 0
+        }
+      ],
+      total: 0,
+      itemCount: 0
+    };
+  }
+
+  quantityChangeHandler = (e, id) => {
+    let inventory = this.state.inventory;
+    for (let item of inventory) {
+      if (item.id === id) {
+        if (e.target.value <= item.inventory) {
+          item.quantity = parseInt(e.target.value);
+          item.subtotal = parseFloat((item.quantity * item.rate).toFixed(2));
+        }
+      }
+    }
+    this.setState({ inventory: inventory });
+    this.totalChangeHandler();
+    this.itemCountChangeHandler();
+  };
+
+  totalChangeHandler() {
+    let inventory = this.state.inventory;
+    let total = 0;
+    for (let item of inventory) {
+      if (item.subtotal === undefined) item.subtotal = 0;
+      total += item.subtotal;
+    }
+    this.setState({ total: parseFloat(total.toFixed(2)) });
+  }
+
+  itemCountChangeHandler() {
+    let inventory = this.state.inventory;
+    let itemCount = 0;
+    for (let item of inventory) {
+      itemCount += item.quantity;
+    }
+    this.setState({ itemCount: parseFloat(itemCount.toFixed(2)) });
+  }
+
   render() {
+    let item_list = this.state.inventory.map(item => {
+      return (
+        <tr key={item.id}>
+          <td className="item name col-lg-4">
+            <Link to="">{item.name}</Link>
+          </td>
+          <td className="item rate col-lg-2">${item.rate}</td>
+          <td className="item inventory col-lg-2">{item.inventory}</td>
+          <td className="item quantity col-lg-2">
+            <input
+              value={item.quantity}
+              min="0"
+              max={item.inventory}
+              onChange={e => this.quantityChangeHandler(e, item.id)}
+              type="number"
+            />
+          </td>
+          <td className="item subtotal col-lg-2">{item.subtotal}</td>
+        </tr>
+      );
+    });
     return (
       <React.Fragment>
         <div className="container">
@@ -24,67 +112,20 @@ class Inventory extends Component {
               </tr>
             </thead>
             <tbody
-              key={uniqid()}
               className="card-parent table table-hover container grocery-item"
               style={{ margin: "auto" }}
             >
-              <tr>
-                <td className="item name col-lg-4">
-                  <Link to="">Cereals</Link>
-                </td>
-                <td className="item rate col-lg-2">$10.95</td>
-                <td className="item inventory col-lg-2">55</td>
-                <td className="item quantity col-lg-2">
-                  <input
-                    placeholder="0"
-                    min="0"
-                    max="10"
-                    onChange={this.quantityChangeHandler}
-                    type="number"
-                  />
-                </td>
-                <td className="item subtotal col-lg-2">$123</td>
-              </tr>
-              <tr>
-                <td className="item name col-lg-4">
-                  <Link to="">Cereals</Link>
-                </td>
-                <td className="item rate col-lg-2">$10.95</td>
-                <td className="item inventory col-lg-2">55</td>
-                <td className="item quantity col-lg-2">
-                  <input
-                    placeholder="0"
-                    min="0"
-                    max="10"
-                    onChange={this.quantityChangeHandler}
-                    type="number"
-                  />
-                </td>
-                <td className="item subtotal col-lg-2">$123</td>
-              </tr>
-              <tr>
-                <td className="item name col-lg-4">
-                  <Link to="">Cereals</Link>
-                </td>
-                <td className="item rate col-lg-2">$10.95</td>
-                <td className="item inventory col-lg-2">55</td>
-                <td className="item quantity col-lg-2">
-                  <input
-                    placeholder="0"
-                    min="0"
-                    max="10"
-                    onChange={this.quantityChangeHandler}
-                    type="number"
-                  />
-                </td>
-                <td className="item subtotal col-lg-2">$123</td>
-              </tr>
+              {item_list}
             </tbody>
           </table>
           <div className="total-row row">
             <span className="col-lg-8" />
-            <div className="item-count col-lg-2">Item Count: 10</div>
-            <div className="item-total col-lg-2">Total: $111</div>
+            <div className="item-count col-lg-2">
+              Total Items: {this.state.itemCount}
+            </div>
+            <div className="item-total col-lg-2">
+              Total: ${this.state.total}
+            </div>
           </div>
           <div className="total-row row">
             <span className="col-lg-10" />
