@@ -29,19 +29,19 @@
 .user-review {
   margin-top: 10px;
 }
-.user-name {
+.name {
   font-size: 13px;
   font-family: "Amazon Ember", Arial, sans-serif;
 }
 
-.user-review-summary {
+.reviewer-summary {
   font-weight: 700;
   font-size: 13px;
 }
-.user-review-rating {
+.reviewer-rating {
   font-size: 13px;
 }
 
-.user-review-details {
+.reviewer-description {
   font-size: 13px;
 }
