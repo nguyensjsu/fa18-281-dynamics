@@ -40,13 +40,12 @@ class Cart extends Component {
     let item_list = this.state.cart.map(item => {
       return (
         <tr key={item.id}>
-          <td className="item name col-lg-4">
+          <td className="item name col-lg-3">
             <Link to="">{item.name}</Link>
           </td>
-          <td className="item rate col-lg-2">${item.rate}</td>
-          <td className="item inventory col-lg-2">{item.inventory}</td>
-          <td className="item quantity col-lg-2">{item.quantity}</td>
-          <td className="item subtotal col-lg-2">{item.subtotal}</td>
+          <td className="item rate col-lg-3">${item.rate}</td>
+          <td className="item quantity col-lg-3">{item.quantity}</td>
+          <td className="item subtotal col-lg-3">{item.subtotal}</td>
         </tr>
       );
     });
@@ -63,13 +62,10 @@ class Cart extends Component {
           <table className="table table-hover">
             <thead>
               <tr>
-                <th className="item name-header col-lg-4">Item</th>
-                <th className="item rate-header col-lg-2">Rate</th>
-                <th className="item inventory-header col-lg-2">
-                  Items Available
-                </th>
-                <th className="item quantity-header col-lg-2">Quantity</th>
-                <th className="item subtotal-header col-lg-2">Subtotal</th>
+                <th className="item name-header col-lg-3">Item</th>
+                <th className="item rate-header col-lg-3">Rate</th>
+                <th className="item quantity-header col-lg-3">Quantity</th>
+                <th className="item subtotal-header col-lg-3">Subtotal</th>
               </tr>
             </thead>
             <tbody
