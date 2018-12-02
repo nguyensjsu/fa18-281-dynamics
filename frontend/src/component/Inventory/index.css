@@ -34,6 +34,8 @@
 }
 
 .subtotal {
+  font-weight: 700;
+  color: #b12704;
 }
 
 .quantity-header {
@@ -53,6 +55,7 @@
 }
 
 .subtotal-header {
+  color: #b12704;
 }
 .total-row {
   font-weight: 700;
@@ -65,4 +68,8 @@
 .item-total {
   display: inline-block;
   text-align: center;
+}
+.item-total-value {
+  color: #b12704;
+  font-weight: 700;
 }
