@@ -62,7 +62,7 @@ func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 		//var result bson.M
-		var results []Person
+		var results []Reviews
 		//err = c.Find(bson.M{}).All(&result)
 		err = c.Find(bson.M{}).All(&results)
 		if err != nil {

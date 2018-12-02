@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Person struct {
+type Reviews struct {
 	ID        bson.ObjectId `bson:"_id,omitempty"`
 	Review      string
 	Timestamp time.Time
