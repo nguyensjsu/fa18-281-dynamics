@@ -26,7 +26,7 @@ func NewServer() *negroni.Negroni {
 
 
 // MongoDB Config
-var mongodb_server = "mongodb://admin:cmpe281@52.53.82.217:27017/groupproject?authSource=admin"
+var mongodb_server = "mongodb://admin:cmpe281@52.53.82.217:27017,54.177.200.126:27017,13.52.64.28:27017/groupproject?authSource=admin&replicaSet=cmpe281"
 var mongodb_database = "groupproject"
 var mongodb_collection = "reviews"
 
@@ -61,9 +61,7 @@ func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
-		//var result bson.M
 		var results []Reviews
-		//err = c.Find(bson.M{}).All(&result)
 		err = c.Find(bson.M{}).All(&results)
 		if err != nil {
 			log.Fatal(err)
