@@ -5,6 +5,8 @@ import SignUp from "./SignUp";
 import Login from "./Login";
 import Inventory from "./Inventory";
 import ItemDetails from "./ItemDetails";
+import Cart from "./Cart";
+import Orders from "./Orders";
 
 //Create a Main Component
 class Main extends Component {
@@ -17,6 +19,8 @@ class Main extends Component {
         <Route path="/signup" exact component={SignUp} />
         <Route path="/inventory" exact component={Inventory} />
         <Route path="/itemdetails" exact component={ItemDetails} />
+        <Route path="/cart" exact component={Cart} />
+        <Route path="/orders" exact component={Orders} />
       </div>
     );
   }

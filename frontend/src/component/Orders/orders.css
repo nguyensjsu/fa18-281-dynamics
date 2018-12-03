@@ -1,0 +1,14 @@
+.order-header {
+  padding: 15px;
+}
+
+.order-status {
+  padding: 10px;
+}
+.order-total {
+  padding: 10px;
+}
+.order-number {
+  position: absolute;
+  right: 50px;
+}
