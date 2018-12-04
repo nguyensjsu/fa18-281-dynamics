@@ -1,0 +1,5 @@
+
+server="mongodb://shivam:msmpsm1@ds225294.mlab.com:25294/shayona-store"
+database="shayona-store"
+username="shayona"
+password="shayona123"
