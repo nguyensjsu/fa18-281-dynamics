@@ -2,6 +2,10 @@
 
 Team Hackathon Project repository for Fall 2018 CMPE 281 course in SJSU with professor Paul Nguyen.
 
+## Architecture
+
+![architecture](/architecture.png)
+
 ## Team Members
 
 - [Shivam Waghela](https://github.com/shivamwaghela)
