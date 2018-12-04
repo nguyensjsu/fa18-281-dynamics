@@ -13,15 +13,16 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"github.com/rs/cors"
 )
 
-var server1 = "http://54.67.19.174:8098" // set in environment
-var server2 = "http://54.67.19.174:8098"  // set in environment
-var server3 = "http://54.67.19.174:8098"  // set in environment
-var server4 = "http://54.67.19.174:8098"
-var server5 = "http://54.67.19.174:8098"
-var elboregon = "http://54.67.19.174:8098"
-var elbcali = "http://54.67.19.174:8098"
+var server1 = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098" // set in environment
+var server2 = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"  // set in environment
+var server3 = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"  // set in environment
+var server4 = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"
+var server5 = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"
+var elboregon = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"
+var elbcali = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"
 
 //var elb = "http://riak-cali-131891034.us-west-1.elb.amazonaws.com:80"
 var debug = true
@@ -40,14 +41,31 @@ func NewClient(server string) *Client {
 	}
 }
 
-// Create a new server
+// // Create a new server
+// func NewServer() *negroni.Negroni {
+// 	formatter := render.New(render.Options{
+// 		IndentJSON: true,
+// 	})
+// 	n := negroni.Classic()
+// 	mx := mux.NewRouter()
+// 	initRoutes(mx, formatter)
+// 	n.UseHandler(mx)
+// 	return n
+// }
+
 func NewServer() *negroni.Negroni {
 	formatter := render.New(render.Options{
 		IndentJSON: true,
 	})
+		corsObj := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"},
+        AllowedMethods: []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+        AllowedHeaders: []string{"Accept", "content-type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
+    })
 	n := negroni.Classic()
 	mx := mux.NewRouter()
 	initRoutes(mx, formatter)
+	n.Use(corsObj)
 	n.UseHandler(mx)
 	return n
 }
