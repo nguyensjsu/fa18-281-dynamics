@@ -29,3 +29,6 @@ Install all the required packages
 Run the React Server
 
     npm start
+
+
+Technologies used: ReactJS, Go, Riak KV database, MongoDB database, AWS , Heroku.
