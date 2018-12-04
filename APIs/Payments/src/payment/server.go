@@ -28,7 +28,7 @@ type Purchase struct {
 }
 
 // MongoDB Config
-var mongodb_server = "localhost:27017"
+var mongodb_server = "admin:cmpe281@ip-10-0-1-207.us-west-1.compute.internal:27017"
 var mongodb_database = "shayona"
 var mongodb_collection = "purchases"
 
@@ -72,7 +72,7 @@ func getPaymentsHandler(formatter *render.Render) http.HandlerFunc {
 		var purchases []bson.M
 		err = c.Find(nil).All(&purchases)
 		if err != nil {
-			fmt.Println("No purchases yet!")
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases yet!"})
 		} else {
 			fmt.Println("All purchases: ", purchases)
 			formatter.JSON(w, http.StatusOK, purchases)
