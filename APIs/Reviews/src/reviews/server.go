@@ -79,7 +79,7 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var m Review
 		_ = json.NewDecoder(req.Body).Decode(&m)
-		fmt.Println("Update Gumball Inventory To: ", m.Review)
+		fmt.Println("Review is: ", m.Review)
 		session, err := mgo.Dial(mongodb_server)
 		if err != nil {
 			panic(err)
@@ -93,7 +93,7 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 		entry := Review{
-			Review: "Amazing",
+			Review: m.Review,
 		}
 		err = c.Insert(entry)
 		if err != nil {
