@@ -8,6 +8,7 @@ import (
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
+	"github.com/rs/cors"
 	"github.com/satori/go.uuid"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -34,14 +35,20 @@ var mongodb_server = "ec2-54-193-109-132.us-west-1.compute.amazonaws.com:27017"
 var mongodb_database = "shayona"
 var mongodb_collection = "purchases"
 
-// NewServer configures and returns a Server.
+// NewServer configures and returns a server
 func NewServer() *negroni.Negroni {
 	formatter := render.New(render.Options{
 		IndentJSON: true,
 	})
+		corsObj := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"},
+        AllowedMethods: []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+        AllowedHeaders: []string{"Accept", "content-type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
+    })
 	n := negroni.Classic()
 	mx := mux.NewRouter()
 	initRoutes(mx, formatter)
+	n.Use(corsObj)
 	n.UseHandler(mx)
 	return n
 }
@@ -82,7 +89,7 @@ func getPaymentsHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
-// API Payment Handler - Insert a new payment
+// API Payment Handler - Insert a new purchase after payment
 func paymentHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
