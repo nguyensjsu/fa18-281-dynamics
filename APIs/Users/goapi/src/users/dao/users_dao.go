@@ -3,7 +3,8 @@ package dao
 import (
 	"log"
 
-	. "../models"
+	. "users/models"
+
 	mgo "gopkg.in/mgo.v2"
 )
 
