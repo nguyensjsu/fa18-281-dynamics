@@ -6,15 +6,13 @@ import (
 	"log"
 	http "net/http"
 
-	. "./config"
-	. "./dao"
-	. "./models"
+	. "users/dao"
+	. "users/models"
 
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
 )
 
-var config = Config{}
 var dao = UsersDAO{}
 
 func PingEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -50,10 +48,8 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 
 // Parse the configuration file 'config.toml', and establish a connection to DB
 func init() {
-	config.Read()
-
-	dao.Server = config.Server
-	dao.Database = config.Database
+	dao.Server = "mongodb://shivam:msmpsm1@ds225294.mlab.com:25294/shayona-store"
+	dao.Database = "shayona-store"
 	dao.Connect()
 }
 
