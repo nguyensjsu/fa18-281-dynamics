@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import axios from "axios";
 import "./index.css";
 
 class Login extends Component {
@@ -8,7 +9,7 @@ class Login extends Component {
     this.state = {
       email: "",
       password: "",
-      loginFlag: false,
+      userLogged: false,
       invalidCreds: false
     };
   }
@@ -25,9 +26,43 @@ class Login extends Component {
     });
   };
 
+  userLogin = e => {
+    e.preventDefault();
+
+    axios
+      .get(`http://localhost:3001/users/${this.state.email}`)
+      .then(response => {
+        console.log("Status Code : ", response.status);
+        if (response.status === 200) {
+          console.log("response data:", response);
+          if (response.data.password === this.state.password) {
+            sessionStorage.setItem("email", response.data.email);
+            this.setState({
+              userLogged: true,
+              invalidCreds: false
+            });
+          } else {
+            this.setState({
+              userLogged: false,
+              invalidCreds: true
+            });
+          }
+        }
+      })
+      .catch(err => {
+        this.setState({
+          userLogged: false,
+          invalidCreds: true
+        });
+      });
+  };
+
   render() {
+    if (this.state.userLogged) {
+      return <Redirect to="/inventory" />;
+    }
     return (
-      <div>
+      <React.Fragment>
         <div id="login-page-headline" className="container">
           <h2>Log in to Shayona Grocery Store</h2>
           <br />
@@ -62,7 +97,7 @@ class Login extends Component {
                 </div>
                 <h6>Forgot password?</h6>
                 <button
-                  onClick={this.submitLogin}
+                  onClick={this.userLogin}
                   className="btn btn-block btn-login rounded-0"
                 >
                   Log In
@@ -71,7 +106,7 @@ class Login extends Component {
             </div>
           </div>
         </div>
-      </div>
+      </React.Fragment>
     );
   }
 }

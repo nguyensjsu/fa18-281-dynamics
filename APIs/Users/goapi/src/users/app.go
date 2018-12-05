@@ -35,8 +35,9 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 	respondWithJson(w, http.StatusCreated, user)
 }
 
-// GET /users: get all user
+// GET /users - get all user
 func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	users, err := dao.FindAll()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -47,6 +48,7 @@ func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
 
 // GET /users/{email}
 func GetUserEndPoint(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	params := mux.Vars(r)
 	user, err := dao.FindByEmail(params["email"])
 	if err != nil {
@@ -72,6 +74,10 @@ func init() {
 	dao.Server = "mongodb://shivam:msmpsm1@ds225294.mlab.com:25294/shayona-store"
 	dao.Database = "shayona-store"
 	dao.Connect()
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 func main() {
