@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
@@ -16,19 +17,20 @@ type Item struct {
 	Name		string 	`json:"name" bson:"name"`
 	Quantity	int 	`json:"quantity" bson:"quantity"`
 	Size		string 	`json:"size" bson:"size"`
-	Price		float32 `json:"price" bson:"price"`
+	Price		float64 `json:"price" bson:"price"`
 }
 
 type Purchase struct {
 	Id 			string 	`json:"id" bson:"_id"`
 	User 		string 	`json:"user" bson:"user"`
 	TotalItems 	int 	`json:"total_items" bson:"total_items"`
-	TotalCost 	float32 `json:"total_cost" bson:"total_cost"`
+	TotalCost 	float64 `json:"total_cost" bson:"total_cost"`
 	Cart 		[]Item  `json:"cart" bson:"cart"`
 }
 
 // MongoDB Config
-var mongodb_server = "admin:cmpe281@ip-10-0-1-207.us-west-1.compute.internal:27017"
+//var mongodb_server = "admin:cmpe281@ip-10-0-1-207.us-west-1.compute.internal:27017"
+var mongodb_server = "ec2-54-193-109-132.us-west-1.compute.amazonaws.com:27017"
 var mongodb_database = "shayona"
 var mongodb_collection = "purchases"
 
@@ -80,13 +82,12 @@ func getPaymentsHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
-// TODO: Format prices to only include two digits after the decimal point
 // API Payment Handler - Insert a new payment
 func paymentHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
 		var totalItems int
-		var totalCost float32
+		var totalCost float64
 
 		decoder := json.NewDecoder(req.Body)
 		var t Purchase
@@ -96,7 +97,7 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 		} else {
 			for _, item := range t.Cart {
 				totalItems += item.Quantity
-				totalCost += float32(item.Quantity) * item.Price
+				totalCost += float64(item.Quantity) * item.Price
 			}
 		}
 
@@ -112,7 +113,7 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 		entry := Purchase{uuid.String(),
 				t.User,
 				totalItems,
-				totalCost,
+				math.Floor(totalCost*100)/100,
 				t.Cart}
 		err = c.Insert(entry)
 		if err != nil {
