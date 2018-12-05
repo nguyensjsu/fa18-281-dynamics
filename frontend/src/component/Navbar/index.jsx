@@ -10,11 +10,11 @@ class Navbar extends Component {
     this.userLogout = this.userLogout.bind(this);
   }
   userLogout() {
-    sessionStorage.removeItem("email");
+    sessionStorage.removeItem("username");
     this.forceUpdate();
   }
   render() {
-    let email = sessionStorage.getItem("email");
+    let username = sessionStorage.getItem("username");
     return (
       <div>
         <nav id="homepage-nav" className="navbar navbar-default">
@@ -24,7 +24,7 @@ class Navbar extends Component {
                 <img src={logo} className="navbar-brand App-logo" alt="logo" />
               </Link>
             </div>
-            {email ? (
+            {username ? (
               <ul className="nav navbar-right">
                 <li className="nav-item dropdown">
                   <button
@@ -36,7 +36,7 @@ class Navbar extends Component {
                     aria-expanded="false"
                     style={{ color: "#0067db" }}
                   >
-                    Hi, {email}
+                    Hi, {username}
                   </button>
                   <div
                     className="dropdown-menu"
