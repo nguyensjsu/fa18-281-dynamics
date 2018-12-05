@@ -6,6 +6,7 @@ import (
 	. "users/models"
 
 	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type UsersDAO struct {
@@ -34,4 +35,19 @@ func (m *UsersDAO) Connect() {
 func (m *UsersDAO) Insert(user User) error {
 	err := db.C(COLLECTION).Insert(&user)
 	return err
+}
+
+// Find all users
+func (m *UsersDAO) FindAll() ([]User, error) {
+	var users []User
+	err := db.C(COLLECTION).Find(bson.M{}).All(&users)
+	return users, err
+}
+
+// Find a user by its email
+func (m *UsersDAO) FindByEmail(email string) (User, error) {
+	var user User
+	err := db.C(COLLECTION).Find(bson.M{"email": email}).One(&user)
+
+	return user, err
 }

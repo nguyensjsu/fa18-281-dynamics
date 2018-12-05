@@ -19,7 +19,7 @@ func PingEndPoint(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Shayona Grocery Store API is alive!")
 }
 
-// POST: create a new user
+// POST /users: create a new user
 func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var user User
@@ -33,6 +33,27 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJson(w, http.StatusCreated, user)
+}
+
+// GET /users: get all user
+func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
+	users, err := dao.FindAll()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJson(w, http.StatusOK, users)
+}
+
+// GET /users/{email}
+func GetUserEndPoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	user, err := dao.FindByEmail(params["email"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid User Email")
+		return
+	}
+	respondWithJson(w, http.StatusOK, user)
 }
 
 func respondWithError(w http.ResponseWriter, code int, msg string) {
@@ -57,6 +78,8 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/ping", PingEndPoint).Methods("GET")
 	r.HandleFunc("/users", CreateUserEndPoint).Methods("POST")
+	r.HandleFunc("/users", GetAllUsersEndPoint).Methods("GET")
+	r.HandleFunc("/users/{email}", GetUserEndPoint).Methods("GET")
 	if err := http.ListenAndServe(":3001", r); err != nil {
 		log.Fatal(err)
 	}
