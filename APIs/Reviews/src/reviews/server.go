@@ -95,7 +95,7 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 		if err != nil {
 			fmt.Println("Error while inserting purchase: ", err)
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchase added"})
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Review added"})
 		}
 	}
 }
