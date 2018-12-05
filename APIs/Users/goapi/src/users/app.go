@@ -37,7 +37,7 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 
 // GET /users - get all user
 func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
+	setupResponse(&w, r)
 	users, err := dao.FindAll()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -48,7 +48,7 @@ func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
 
 // GET /users/{email}
 func GetUserEndPoint(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
+	setupResponse(&w, r)
 	params := mux.Vars(r)
 	user, err := dao.FindByEmail(params["email"])
 	if err != nil {
@@ -76,8 +76,10 @@ func init() {
 	dao.Connect()
 }
 
-func enableCors(w *http.ResponseWriter) {
+func setupResponse(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 
 func main() {
@@ -86,7 +88,7 @@ func main() {
 	r.HandleFunc("/users", CreateUserEndPoint).Methods("POST")
 	r.HandleFunc("/users", GetAllUsersEndPoint).Methods("GET")
 	r.HandleFunc("/users/{email}", GetUserEndPoint).Methods("GET")
-	if err := http.ListenAndServe(":3001", r); err != nil {
+	if err := http.ListenAndServe(":3000", r); err != nil {
 		log.Fatal(err)
 	}
 }
