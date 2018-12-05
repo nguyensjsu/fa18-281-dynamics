@@ -60,6 +60,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/payment", paymentHandler(formatter)).Methods("POST")
 	mx.HandleFunc("/payments/user", getPaymentsByUserHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/payment/delete/id", deletePaymentByIdHandler(formatter)).Methods("DELETE")
+	mx.HandleFunc("/payments/delete/user", deletePaymentsByUserHandler(formatter)).Methods("DELETE")
 }
 
 // API Ping Handler
@@ -165,7 +166,7 @@ func getPaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 }
 
 
-// API Delete Payments By Id Handler - Delete a single payment with specified id
+// API Delete Payment By Id Handler - Delete a single payment with specified id
 func deletePaymentByIdHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
@@ -193,3 +194,30 @@ func deletePaymentByIdHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
+// API Delete Payments By User Handler - Delete all payments made by a specified user
+func deletePaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+
+		decoder := json.NewDecoder(req.Body)
+		var t Purchase
+		err := decoder.Decode(&t)
+		if err != nil {
+			fmt.Println("Error parsing the request's body: ", err)
+		}
+
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_collection)
+
+		_, err = c.RemoveAll(bson.M{"user":t.User})
+		if err != nil {
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases from this user"})
+		} else {
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchases deleted"})
+		}
+	}
+}
