@@ -44,10 +44,10 @@ func (m *UsersDAO) FindAll() ([]User, error) {
 	return users, err
 }
 
-// Find a user by its email
-func (m *UsersDAO) FindByEmail(email string) (User, error) {
+// Find a user by its username
+func (m *UsersDAO) FindByUsername(username string) (User, error) {
 	var user User
-	err := db.C(COLLECTION).Find(bson.M{"email": email}).One(&user)
+	err := db.C(COLLECTION).Find(bson.M{"username": username}).One(&user)
 
 	return user, err
 }

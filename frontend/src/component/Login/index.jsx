@@ -7,16 +7,16 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
+      username: "",
       password: "",
       userLogged: false,
       invalidCreds: false
     };
   }
 
-  emailChangeHandler = e => {
+  usernameChangeHandler = e => {
     this.setState({
-      email: e.target.value
+      username: e.target.value
     });
   };
 
@@ -28,15 +28,17 @@ class Login extends Component {
 
   userLogin = e => {
     e.preventDefault();
-
+    let USERS_GOAPI_ELB =
+      "http://Shayona-GOAPI-ELB-1280633407.us-west-2.elb.amazonaws.com";
+    let PORT = 3000;
     axios
-      .get(`http://localhost:3001/users/${this.state.email}`)
+      .get(`${USERS_GOAPI_ELB}:${PORT}/users/${this.state.username}`)
       .then(response => {
         console.log("Status Code : ", response.status);
         if (response.status === 200) {
           console.log("response data:", response);
           if (response.data.password === this.state.password) {
-            sessionStorage.setItem("email", response.data.email);
+            sessionStorage.setItem("username", response.data.username);
             this.setState({
               userLogged: true,
               invalidCreds: false
@@ -71,7 +73,7 @@ class Login extends Component {
           </h4>
           <h6 style={{ color: "#BA160C" }}>
             {this.state.invalidCreds &&
-              "The email and password you entered did not match our records. Please double-check and try again."}
+              "The username and password you entered did not match our records. Please double-check and try again."}
           </h6>
           <div className="login-form card rounded-0">
             <div className="card-header card-title">
@@ -81,10 +83,10 @@ class Login extends Component {
               <form method="POST">
                 <div className="form-group">
                   <input
-                    onChange={this.emailChangeHandler}
+                    onChange={this.usernameChangeHandler}
                     type="text"
                     className="form-control rounded-0"
-                    placeholder="Email address"
+                    placeholder="Username"
                   />
                 </div>
                 <div className="form-group">

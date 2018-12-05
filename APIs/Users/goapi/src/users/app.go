@@ -46,13 +46,13 @@ func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
 	respondWithJson(w, http.StatusOK, users)
 }
 
-// GET /users/{email}
+// GET /users/{username}
 func GetUserEndPoint(w http.ResponseWriter, r *http.Request) {
 	setupResponse(&w, r)
 	params := mux.Vars(r)
-	user, err := dao.FindByEmail(params["email"])
+	user, err := dao.FindByUsername(params["username"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid User Email")
+		respondWithError(w, http.StatusBadRequest, "Invalid Username")
 		return
 	}
 	respondWithJson(w, http.StatusOK, user)
@@ -87,7 +87,7 @@ func main() {
 	r.HandleFunc("/ping", PingEndPoint).Methods("GET")
 	r.HandleFunc("/users", CreateUserEndPoint).Methods("POST")
 	r.HandleFunc("/users", GetAllUsersEndPoint).Methods("GET")
-	r.HandleFunc("/users/{email}", GetUserEndPoint).Methods("GET")
+	r.HandleFunc("/users/{username}", GetUserEndPoint).Methods("GET")
 	if err := http.ListenAndServe(":3000", r); err != nil {
 		log.Fatal(err)
 	}
