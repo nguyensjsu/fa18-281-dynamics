@@ -22,7 +22,7 @@ type Item struct {
 }
 
 type Purchase struct {
-	Id 			string 	`json:"id" bson:"_id"`
+	Id 			string 	`json:"_id" bson:"_id"`
 	User 		string 	`json:"user" bson:"user"`
 	TotalItems 	int 	`json:"total_items" bson:"total_items"`
 	TotalCost 	float64 `json:"total_cost" bson:"total_cost"`
@@ -59,6 +59,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/payments", getPaymentsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/payment", paymentHandler(formatter)).Methods("POST")
 	mx.HandleFunc("/payments/user", getPaymentsByUserHandler(formatter)).Methods("GET")
+	mx.HandleFunc("/payment/delete/id", deletePaymentByIdHandler(formatter)).Methods("DELETE")
 }
 
 // API Ping Handler
@@ -155,10 +156,40 @@ func getPaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 		var purchases []bson.M
 		err = c.Find(bson.M{"user":t.User}).All(&purchases)
 		if err != nil {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases yet!"})
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases from this user"})
 		} else {
 			fmt.Println("All purchases: ", purchases)
 			formatter.JSON(w, http.StatusOK, purchases)
 		}
 	}
 }
+
+
+// API Delete Payments By Id Handler - Delete a single payment with specified id
+func deletePaymentByIdHandler(formatter *render.Render) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+
+		decoder := json.NewDecoder(req.Body)
+		var t Purchase
+		err := decoder.Decode(&t)
+		if err != nil {
+			fmt.Println("Error parsing the request's body: ", err)
+		}
+
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_collection)
+
+		err = c.Remove(bson.M{"_id":t.Id})
+		if err != nil {
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchase with this id"})
+		} else {
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchase deleted"})
+		}
+	}
+}
+
