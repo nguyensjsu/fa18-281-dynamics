@@ -71,7 +71,7 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 
 // Parse the configuration file 'config.toml', and establish a connection to DB
 func init() {
-	dao.Server = "mongodb://shivam:msmpsm1@ds225294.mlab.com:25294/shayona-store"
+	dao.Server = "mongodb://admin:admin@54.153.82.51:27017,13.52.93.108:27017,52.9.115.13:27017,50.18.201.231:27017,13.52.91.223:27017"
 	dao.Database = "shayona-store"
 	dao.Connect()
 }
