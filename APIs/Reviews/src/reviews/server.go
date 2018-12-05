@@ -35,6 +35,7 @@ var mongodb_collection = "reviews"
 func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/getReviews", getReviewsHandler(formatter)).Methods("GET")
+	mx.HandleFunc("/postReview", postReviewHandler(formatter)).Methods("POST")
 
 }
 
@@ -45,7 +46,7 @@ func pingHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
-// API Gumball Machine Handler
+// API Get All Reviews Handler
 func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
@@ -61,12 +62,40 @@ func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
-		var results []Reviews
+		var results []Review
 		err = c.Find(bson.M{}).All(&results)
 		if err != nil {
 			log.Fatal(err)
 		}
 		fmt.Println(results)
 		formatter.JSON(w, http.StatusOK, results)
+	}
+}
+
+// API Post a Review Handler.
+func postReviewHandler(formatter *render.Render) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, req *http.Request) {
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+
+		if err != nil {
+			fmt.Println("Reviews API - Unable to connect to MongoDB during read operation")
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_collection)
+		entry := Review{
+			Review: "Amazing",
+		}
+		err = c.Insert(entry)
+		if err != nil {
+			fmt.Println("Error while inserting purchase: ", err)
+		} else {
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchase added"})
+		}
 	}
 }
