@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
@@ -76,6 +77,9 @@ func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
+		var m Review
+		_ = json.NewDecoder(req.Body).Decode(&m)
+		fmt.Println("Update Gumball Inventory To: ", m.Review)
 		session, err := mgo.Dial(mongodb_server)
 		if err != nil {
 			panic(err)
