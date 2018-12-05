@@ -58,6 +58,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/payments", getPaymentsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/payment", paymentHandler(formatter)).Methods("POST")
+	mx.HandleFunc("/payments/user", getPaymentsByUserHandler(formatter)).Methods("GET")
 }
 
 // API Ping Handler
@@ -129,5 +130,35 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchase added"})
 		}
 
+	}
+}
+
+// API Payments By User Handler - Get all purchases from a specified user
+func getPaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+
+		decoder := json.NewDecoder(req.Body)
+		var t Purchase
+		err := decoder.Decode(&t)
+		if err != nil {
+			fmt.Println("Error parsing the request's body: ", err)
+		}
+
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_collection)
+
+		var purchases []bson.M
+		err = c.Find(bson.M{"user":t.User}).All(&purchases)
+		if err != nil {
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases yet!"})
+		} else {
+			fmt.Println("All purchases: ", purchases)
+			formatter.JSON(w, http.StatusOK, purchases)
+		}
 	}
 }
