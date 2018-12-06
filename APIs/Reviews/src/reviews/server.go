@@ -100,7 +100,7 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 		}
 		err = c.Insert(entry)
 		if err != nil {
-			fmt.Println("Error while inserting purchase: ", err)
+			fmt.Println("Error while adding reviews: ", err)
 		} else {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Review added"})
 		}
@@ -133,7 +133,7 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 		err = c.Update(query, change)
 
 		if err != nil {
-			fmt.Println("Error while inserting purchase: ", err)
+			fmt.Println("Error while adding reviews: ", err)
 		} else {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Review added"})
 		}
