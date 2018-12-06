@@ -15,22 +15,19 @@ import (
 )
 
 type Item struct {
-	Name		string 	`json:"name" bson:"name"`
-	Quantity	int 	`json:"quantity" bson:"quantity"`
-	Size		string 	`json:"size" bson:"size"`
-	Price		float64 `json:"price" bson:"price"`
+	ItemName		string 	`json:"item_name" bson:"item_name"`
+	ItemQuantity	int 	`json:"item_quantity" bson:"item_quantity"`
+	Rate			float64 `json:"item_rate" bson:"item_rate"`
 }
 
 type Purchase struct {
 	Id 			string 	`json:"_id" bson:"_id"`
-	User 		string 	`json:"user" bson:"user"`
-	TotalItems 	int 	`json:"total_items" bson:"total_items"`
-	TotalCost 	float64 `json:"total_cost" bson:"total_cost"`
-	Cart 		[]Item  `json:"cart" bson:"cart"`
+	Username 	string 	`json:"username" bson:"username"`
+	TotalItems 	int 	`json:"item_count" bson:"item_count"`
+	CartTotal 	float64 `json:"cart_total" bson:"cart_total"`
+	Items 		[]Item  `json:"items" bson:"items"`
+	PaymentInfo string 	`json:"payment_info" bson:"payment_info"`
 }
-
-// TODO: add payment method - paypal, debit card number, credit card number
-// TODO: store card info
 
 // MongoDB Config
 var mongodb_server = "admin:cmpe281@10.0.1.207:27017,10.0.1.217:27017,10.0.1.127:27017,10.0.1.157:27017,10.0.1.160:27017"
@@ -107,9 +104,9 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 		if err != nil {
 			fmt.Println("Error parsing the request's body: ", err)
 		} else {
-			for _, item := range t.Cart {
-				totalItems += item.Quantity
-				totalCost += float64(item.Quantity) * item.Price
+			for _, item := range t.Items {
+				totalItems += item.ItemQuantity
+				totalCost += float64(item.ItemQuantity) * item.Rate
 			}
 		}
 
@@ -123,17 +120,17 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 
 		uuid, _ := uuid.NewV4()
 		entry := Purchase{uuid.String(),
-				t.User,
+				t.Username,
 				totalItems,
 				math.Floor(totalCost*100)/100,
-				t.Cart}
+				t.Items,
+				t.PaymentInfo}
 		err = c.Insert(entry)
 		if err != nil {
 			fmt.Println("Error while inserting purchase: ", err)
 		} else {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchase added"})
 		}
-
 	}
 }
 
@@ -157,7 +154,7 @@ func getPaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 		c := session.DB(mongodb_database).C(mongodb_collection)
 
 		var purchases []bson.M
-		err = c.Find(bson.M{"user":t.User}).All(&purchases)
+		err = c.Find(bson.M{"user":t.Username}).All(&purchases)
 		if err != nil {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases from this user"})
 		} else {
@@ -215,7 +212,7 @@ func deletePaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 
-		_, err = c.RemoveAll(bson.M{"user":t.User})
+		_, err = c.RemoveAll(bson.M{"user":t.Username})
 		if err != nil {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases from this user"})
 		} else {
