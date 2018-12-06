@@ -38,7 +38,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/getReviews", getReviewsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/postReview", postReviewHandler(formatter)).Methods("POST")
 	mx.HandleFunc("/updateReview", updateReviewHandler(formatter)).Methods("PUT")
-	mx.HandleFunc("/deleteReview", deleteReviewHandler(formatter)).Methods("POST")
+	mx.HandleFunc("/deleteReview", deleteReviewHandler(formatter)).Methods("DELETE")
 
 }
 
