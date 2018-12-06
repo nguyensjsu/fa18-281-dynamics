@@ -128,12 +128,12 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 
-		query := bson.M{"ItemId" : "10"}
-		change := bson.M{"$set": bson.M{ "Review" : "Bakwas"}}
+		query := bson.M{"itemid" : 10}
+		change := bson.M{"$set": bson.M{ "review" : "Bakwas"}}
 		err = c.Update(query, change)
 
 		if err != nil {
-			fmt.Println("Error while adding reviews: ", err)
+			fmt.Println("Error while updating reviews: ", err)
 		} else {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Review added"})
 		}
