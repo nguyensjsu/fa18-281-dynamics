@@ -29,9 +29,11 @@ type Purchase struct {
 	Cart 		[]Item  `json:"cart" bson:"cart"`
 }
 
+// TODO: add payment method - paypal, debit card number, credit card number
+// TODO: store card info
+
 // MongoDB Config
-//var mongodb_server = "admin:cmpe281@ip-10-0-1-207.us-west-1.compute.internal:27017"
-var mongodb_server = "ec2-54-193-109-132.us-west-1.compute.amazonaws.com:27017"
+var mongodb_server = "admin:cmpe281@10.0.1.207:27017,10.0.1.217:27017,10.0.1.127:27017,10.0.1.157:27017,10.0.1.160:27017"
 var mongodb_database = "shayona"
 var mongodb_collection = "purchases"
 
