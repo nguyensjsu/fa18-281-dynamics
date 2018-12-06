@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "./index.css";
 
 class SignUp extends Component {
@@ -9,14 +10,14 @@ class SignUp extends Component {
     this.state = {
       firstname: "",
       lastname: "",
-      email: "",
+      username: "",
       password: "",
-      isowner: false,
-      regFlag: false
+      userRegistered: false
     };
   }
 
   firstnameChangeHandler = e => {
+    console.log(this.state.firstname);
     this.setState({
       firstname: e.target.value
     });
@@ -26,9 +27,9 @@ class SignUp extends Component {
       lastname: e.target.value
     });
   };
-  emailChangeHandler = e => {
+  usernameChangeHandler = e => {
     this.setState({
-      email: e.target.value
+      username: e.target.value
     });
   };
   passwordChangeHandler = e => {
@@ -37,10 +38,41 @@ class SignUp extends Component {
     });
   };
 
+  userRegistration = e => {
+    e.preventDefault();
+    let USERS_GOAPI_ELB =
+      "http://Shayona-GOAPI-ELB-1280633407.us-west-2.elb.amazonaws.com";
+    let PORT = 3000;
+    console.log(this.state.username);
+    let data = {
+      firstname: this.state.firstname,
+      lastname: this.state.lastname,
+      username: this.state.username,
+      password: this.state.password
+    };
+    axios
+      .post(`${USERS_GOAPI_ELB}:${PORT}/users`, data)
+      .then(response => {
+        console.log("Status Code : ", response);
+        if (response.status === 201) {
+          console.log("response data:", response);
+          this.setState({
+            userRegistered: true
+          });
+        }
+      })
+      .catch(err => {
+        console.log("error", err);
+        this.setState({
+          userRegistered: false
+        });
+      });
+  };
+
   render() {
     return (
       <div>
-        {this.state.regFlag && <Redirect to={{ pathname: "/login" }} />}
+        {this.state.userRegistered && <Redirect to="/login" />}
         <div className="container">
           <h4
             style={{
@@ -84,10 +116,10 @@ class SignUp extends Component {
                 </div>
                 <div className="form-group">
                   <input
-                    onChange={this.emailChangeHandler}
+                    onChange={this.usernameChangeHandler}
                     type="text"
                     className="form-control form-control-lg rounded-0"
-                    placeholder="Email address"
+                    placeholder="Username"
                   />
                 </div>
                 <div className="form-group">
@@ -100,7 +132,7 @@ class SignUp extends Component {
                 </div>
                 <h6>Forgot password?</h6>
                 <button
-                  onClick={this.submitRegister} // to be implemented
+                  onClick={this.userRegistration} // to be implemented
                   className="btn btn-lg btn-block btn-login rounded-0"
                 >
                   Sign Me Up
