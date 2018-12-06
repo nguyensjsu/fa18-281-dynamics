@@ -37,6 +37,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/getReviews", getReviewsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/postReview", postReviewHandler(formatter)).Methods("POST")
+	mx.HandleFunc("/updateReview", updateReviewHandler(formatter)).Methods("PUT")
 
 }
 
@@ -57,7 +58,7 @@ func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 		}
 
 		if err != nil {
-			fmt.Println("Reviews API - Unable to connect to MongoDB during read operation")
+			fmt.Println("Reviews API (Get) - Unable to connect to MongoDB during read operation")
 			panic(err)
 		}
 		defer session.Close()
@@ -86,7 +87,7 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 		}
 
 		if err != nil {
-			fmt.Println("Reviews API - Unable to connect to MongoDB during read operation")
+			fmt.Println("Reviews API (Post) - Unable to connect to MongoDB during read operation")
 			panic(err)
 		}
 		defer session.Close()
@@ -98,6 +99,39 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 			ItemId: m.ItemId,
 		}
 		err = c.Insert(entry)
+		if err != nil {
+			fmt.Println("Error while inserting purchase: ", err)
+		} else {
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Review added"})
+		}
+	}
+}
+
+
+// API Post a Review Handler.
+func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, req *http.Request) {
+		var m Review
+		_ = json.NewDecoder(req.Body).Decode(&m)
+		fmt.Println("Review is: ", m.Review, " ", m.ItemId," ", m.UserId)
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+
+		if err != nil {
+			fmt.Println("Reviews API (Update) - Unable to connect to MongoDB during read operation")
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_collection)
+
+		query := bson.M{"ItemId" : "10"}
+		change := bson.M{"$set": bson.M{ "Review" : "Bakwas"}}
+		err = c.Update(query, change)
+
 		if err != nil {
 			fmt.Println("Error while inserting purchase: ", err)
 		} else {
