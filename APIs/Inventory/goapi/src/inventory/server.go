@@ -1,17 +1,20 @@
 package main
 
+
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
-
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"log"
+	"net/http"
 )
 
+
 // MongoDB Config
-var mongodb_server = "mongodb://admin:admin@52.9.134.184:27017/inventory?authSource=admin"
+var mongodb_server = "mongodb://admin:admin@52.9.134.184:27017/admin"
 var mongodb_database = "inventory"
 var mongodb_collection = "inventoryItem"
 
@@ -26,36 +29,46 @@ func NewServer() *negroni.Negroni {
 	return n
 }
 
+// API routes
+func initRoutes(mx *mux.Router, formatter *render.Render) {
+	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
+	mx.HandleFunc("/inventory", getInventoryHandler(formatter)).Methods("GET")
+}
+
+// API Ping Handler
 func pingHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct{ Test string }{"Inventory API is live!!"})
-		mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
+		formatter.JSON(w, http.StatusOK, struct{ Test string }{"Ping works!"})
 	}
 }
 
-func initRoutes(mx *mux.Router, formatter *render.Render) {
-	mx.HandleFunc("/", pingHandler(formatter)).Methods("GET")
-	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
+// API GetInventoryItems Handler
+func getInventoryHandler(formatter *render.Render) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, req *http.Request) {
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+
+		if err != nil {
+			fmt.Println("Inventory API - Unable to connect to MongoDB during read operation")
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_collection)
+		var results []inventoryItem
+		err = c.Find(bson.M{}).All(&results)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(results)
+		formatter.JSON(w, http.StatusOK, results)
+	}
 }
 
-// Ping the API to check if its working.
-func (c *Client) Ping() (string, error) {
-	resp, err := c.Get(c.Endpoint + "/ping")
 
-	if err != nil {
-		fmt.Println("[RIAK DEBUG] " + err.Error())
-		return "Ping Error!", err
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-
-	if debug {
-		fmt.Println("[RIAK DEBUG] GET: " + c.Endpoint + "/ping => " + string(body))
-	}
-	return string(body), nil
-}
 
 //sample document
 // db.createCollection("inventoryItem")
