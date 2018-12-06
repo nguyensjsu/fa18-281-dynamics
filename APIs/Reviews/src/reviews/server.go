@@ -129,7 +129,11 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 
-		query := bson.M{"itemid" : 10}
+		query := bson.M{
+			"_id" : m.Id,
+			"itemid" : m.ItemId,
+			"userid" : m.UserId,
+		}
 		change := bson.M{"$set": bson.M{ "review" : m.Review}}
 		err = c.Update(query, change)
 
@@ -147,7 +151,7 @@ func deleteReviewHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var m Review
 		_ = json.NewDecoder(req.Body).Decode(&m)
-		fmt.Println("Review is: ", m.Review, " ", m.ItemId," ", m.UserId)
+		fmt.Println("Review is: ", m.Id)
 		session, err := mgo.Dial(mongodb_server)
 		if err != nil {
 			panic(err)
@@ -161,7 +165,11 @@ func deleteReviewHandler(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 
-		err = c.Remove(bson.M{"review" : m.Review,"itemid" : m.ItemId, "userid" : m.UserId})
+		err = c.Remove(bson.M{
+			"_id" : m.Id,
+			"itemid" : m.ItemId,
+			"userid" : m.UserId,
+		})
 
 		if err != nil {
 			fmt.Println("Error while deleting reviews: ", err)
