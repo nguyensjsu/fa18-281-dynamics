@@ -38,6 +38,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/getReviews", getReviewsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/postReview", postReviewHandler(formatter)).Methods("POST")
 	mx.HandleFunc("/updateReview", updateReviewHandler(formatter)).Methods("PUT")
+	mx.HandleFunc("/deleteReview/id", deleteReviewHandler(formatter)).Methods("DELETE")
 
 }
 
@@ -108,7 +109,7 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 }
 
 
-// API Post a Review Handler.
+// API Update a Review Handler.
 func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
@@ -131,6 +132,36 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 		query := bson.M{"itemid" : 10}
 		change := bson.M{"$set": bson.M{ "review" : m.Review}}
 		err = c.Update(query, change)
+
+		if err != nil {
+			fmt.Println("Error while updating reviews: ", err)
+		} else {
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Review added"})
+		}
+	}
+}
+
+// API Delete a Review Handler.
+func deleteReviewHandler(formatter *render.Render) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, req *http.Request) {
+		var m Review
+		_ = json.NewDecoder(req.Body).Decode(&m)
+		fmt.Println("Review is: ", m.id)
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+
+		if err != nil {
+			fmt.Println("Reviews API (Update) - Unable to connect to MongoDB during read operation")
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_collection)
+
+		err = c.Remove(bson.M{"id":m.id})
 
 		if err != nil {
 			fmt.Println("Error while updating reviews: ", err)
