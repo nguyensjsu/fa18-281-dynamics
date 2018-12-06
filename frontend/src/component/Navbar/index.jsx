@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import "./index.css";
 import logo from "../../images/shayona-logob.png";
 
@@ -15,6 +15,9 @@ class Navbar extends Component {
   }
   render() {
     let username = sessionStorage.getItem("username");
+    if (username === undefined) {
+      return <Redirect to="/login" />;
+    }
     return (
       <div>
         <nav id="homepage-nav" className="navbar navbar-default">

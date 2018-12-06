@@ -60,11 +60,9 @@ class Login extends Component {
   };
 
   render() {
-    if (this.state.userLogged) {
-      return <Redirect to="/inventory" />;
-    }
     return (
       <React.Fragment>
+        {this.state.userLogged && <Redirect to="/inventory" />}
         <div id="login-page-headline" className="container">
           <h2>Log in to Shayona Grocery Store</h2>
           <br />
