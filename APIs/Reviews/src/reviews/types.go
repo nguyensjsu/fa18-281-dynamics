@@ -1,10 +1,8 @@
 package main
 
-import "gopkg.in/mgo.v2/bson"
-
 type Review struct {
-	id       	bson.ObjectId
-	Review      string
-	ItemId		int
-	UserId 		int
+	Id     string `json:"_id" bson:"_id"`
+	Review string
+	ItemId int
+	UserId int
 }
