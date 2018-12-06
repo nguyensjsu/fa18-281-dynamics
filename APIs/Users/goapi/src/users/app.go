@@ -9,6 +9,7 @@ import (
 	. "users/dao"
 	. "users/models"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -37,7 +38,6 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 
 // GET /users - get all user
 func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
-	setupResponse(&w, r)
 	users, err := dao.FindAll()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -48,7 +48,6 @@ func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
 
 // GET /users/{username}
 func GetUserEndPoint(w http.ResponseWriter, r *http.Request) {
-	setupResponse(&w, r)
 	params := mux.Vars(r)
 	user, err := dao.FindByUsername(params["username"])
 	if err != nil {
@@ -76,19 +75,13 @@ func init() {
 	dao.Connect()
 }
 
-func setupResponse(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-}
-
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/ping", PingEndPoint).Methods("GET")
 	r.HandleFunc("/users", CreateUserEndPoint).Methods("POST")
 	r.HandleFunc("/users", GetAllUsersEndPoint).Methods("GET")
 	r.HandleFunc("/users/{username}", GetUserEndPoint).Methods("GET")
-	if err := http.ListenAndServe(":3000", r); err != nil {
+	if err := http.ListenAndServe(":3000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(r)); err != nil {
 		log.Fatal(err)
 	}
 }
