@@ -22,7 +22,7 @@ import (
 //var server4 = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"
 //var server5 = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"
 //var elboregon = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"
-var elbcart = "http://54.67.19.174:8098"
+var elbcart = "http://internal-RIAKelb-829969978.us-west-1.elb.amazonaws.com:8098"
 
 //var elb = "http://riak-cali-131891034.us-west-1.elb.amazonaws.com:80"
 var debug = true
@@ -307,12 +307,12 @@ func newOrderHandler(formatter *render.Render) http.HandlerFunc {
 		var totalAmount float64
 
 		for i := 0; i < len(cartItems); i++ {
-			cartItems[i].Amount = calculateAmount(cartItems[i].Count, cartItems[i].Price)
-			totalAmount += cartItems[i].Amount
+			cartItems[i].ItemSubtotal = calculateAmount(cartItems[i].ItemQuantity, cartItems[i].ItemRate)
+			totalAmount += cartItems[i].ItemSubtotal
 		}
 
 		totalAmount = math.Ceil(totalAmount*100) / 100
-		newCart.Total = totalAmount
+		newCart.CartTotal = totalAmount
 
 		reqbody, _ := json.Marshal(newCart)
 
@@ -370,7 +370,7 @@ func viewCartHandler(formatter *render.Render) http.HandlerFunc {
 			cart_keys, err := c.GetKeys()
 			cart_list := []Cart{}
 			for _, item := range cart_keys {
-				if c.GetOrder(item).User_Name == uid {
+				if c.GetOrder(item).UserName == uid {
 					cart_list = append(cart_list, c.GetOrder(item))
 				}
 			}
@@ -436,13 +436,13 @@ func updateCartHandler(formatter *render.Render) http.HandlerFunc {
 
 		cartItems := newCart.Items
 		for i := 0; i < len(cartItems); i++ {
-			cartItems[i].Amount = calculateAmount(cartItems[i].Count, cartItems[i].Price)
-			totalAmount += cartItems[i].Amount
+			cartItems[i].ItemSubtotal = calculateAmount(cartItems[i].ItemQuantity, cartItems[i].ItemRate)
+			totalAmount += cartItems[i].ItemSubtotal
 		}
 
 		totalAmount = math.Ceil(totalAmount*100) / 100
 
-		newCart.Total = totalAmount
+		newCart.CartTotal = totalAmount
 
 		c := NewClient(elbcart)
 		val_resp, err := c.UpdateOrder(newCart)
@@ -457,8 +457,8 @@ func updateCartHandler(formatter *render.Render) http.HandlerFunc {
 
 }
 
-func calculateAmount(count int, Price float64) float64 {
-	total := float64(count) * Price
+func calculateAmount(count int, ItemRate float64) float64 {
+	total := float64(count) * ItemRate
 	total = math.Ceil(total*100) / 100
 	return total
 }

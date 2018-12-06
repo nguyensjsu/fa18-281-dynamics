@@ -16,16 +16,16 @@ type Client struct {
 
 type Cart struct {
 	Id     string `json:"id"`
-	User_Name string `json:"User_Name"`
+	UserName string `json:"username"`
 
 	Items []struct {
-		Name   string  `json:"name"`
-		Count  int     `json:"count"`
-		Price   float64 `json:"Price"`
-		Amount float64 `json:"amount"`
+		ItemName   string  `json:"item_name"`
+		ItemQuantity  int     `json:"item_quantity"`
+		ItemRate   float64 `json:"item_rate"`
+		ItemSubtotal float64 `json:"item_subtotal"`
 	} `json:"items"`
 
-	Total float64 `json:"total"`
+	CartTotal float64 `json:"cart_total"`
 }
 
 type Keys struct {

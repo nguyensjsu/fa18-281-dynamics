@@ -3,7 +3,7 @@
 # Container
 
 ACCOUNT=""
-CONTAINER="go_riak"
+CONTAINER="cart"
 VERSION="v1.0"
 
 # Shell Variables

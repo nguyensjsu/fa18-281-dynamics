@@ -4,5 +4,5 @@ RUN mkdir /app
 ADD . /app/ 
 WORKDIR /app 
 ENV GOPATH /app
-RUN cd /app ; go install go_riak
-CMD ["/app/bin/go_riak"]
+RUN cd /app ; go install cart
+CMD ["/app/bin/cart"]
