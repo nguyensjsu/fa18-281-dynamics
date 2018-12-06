@@ -114,7 +114,7 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var m Review
 		_ = json.NewDecoder(req.Body).Decode(&m)
-		fmt.Println("Review is: ", m.Review, " ", m.ItemId," ", m.UserId)
+		fmt.Println("Review is: ", m.Review)
 		session, err := mgo.Dial(mongodb_server)
 		if err != nil {
 			panic(err)
@@ -129,7 +129,7 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 		c := session.DB(mongodb_database).C(mongodb_collection)
 
 		query := bson.M{"itemid" : 10}
-		change := bson.M{"$set": bson.M{ "review" : "Bakwas"}}
+		change := bson.M{"$set": bson.M{ "review" : m.Review}}
 		err = c.Update(query, change)
 
 		if err != nil {
