@@ -7,9 +7,9 @@ type Review struct {
 	ItemName	string
 
 	Reviews []struct {
-		ReviewName 		string
-		ReviewSummary 	string
-		Review 			string
-		Rating 			int
+		ReviewerName 		string
+		ReviewSummary 		string
+		Review 				string
+		Rating 				int
 	}
 }
