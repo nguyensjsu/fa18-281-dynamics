@@ -328,11 +328,12 @@ func addMoneyToWalletHandler(formatter *render.Render) http.HandlerFunc {
 		err = c.Find(bson.M{"username" : body.Username}).One(&currentWallet)
 
 		if (err != nil) {
-			formatter.JSON(w, http.StatusNotFound, struct{ Test string }{"No wallet for this user"})
+			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No wallet for this user"})
 		} else {
 			currentAmount := currentWallet["wallet_amount"].(float64)
 	        query := bson.M{"username" : body.Username}
 	        newAmount := currentAmount + body.Amount
+	        newAmount = math.Floor(newAmount*100)/100
 	        change := bson.M{"$set": bson.M{ "wallet_amount" : newAmount}}
 	        err = c.Update(query, change)
 
@@ -371,11 +372,12 @@ func payWalletHandler(formatter *render.Render) http.HandlerFunc {
 		err = c.Find(bson.M{"username" : body.Username}).One(&currentWallet)
 
 		if (err != nil) {
-			formatter.JSON(w, http.StatusNotFound, struct{ Test string }{"No wallet for this user"})
+			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No wallet for this user"})
 		} else {
 			currentAmount := currentWallet["wallet_amount"].(float64)
 	        query := bson.M{"username" : body.Username}
 	        newAmount := currentAmount - body.Amount
+	        newAmount = math.Floor(newAmount*100)/100
 	        change := bson.M{"$set": bson.M{ "wallet_amount" : newAmount}}
 	        err = c.Update(query, change)
 
