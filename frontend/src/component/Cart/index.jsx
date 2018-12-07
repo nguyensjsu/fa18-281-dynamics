@@ -1,51 +1,105 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import "./cart.css";
+import axios from "axios";
+import uniqid from "uniqid";
+import closeicon from "../../images/close-icon.png";
 
 class Cart extends Component {
   constructor() {
     super();
     this.state = {
-      cart: [
-        {
-          id: 1,
-          name: "Cereals",
-          rate: 10.95,
-          inventory: 53,
-          quantity: 10,
-          subtotal: 110
-        },
-        {
-          id: 2,
-          name: "Bread",
-          rate: 3.99,
-          inventory: 11,
-          quantity: 10,
-          subtotal: 110
-        },
-        {
-          id: 3,
-          name: "Milk",
-          rate: 3.16,
-          inventory: 20,
-          quantity: 10,
-          subtotal: 110
-        }
-      ],
+      cart: [],
       total: 0,
       itemCount: 0
     };
   }
+
+  componentWillMount() {
+    let CART_HOST_ELB = "oregonELB-875160293.us-west-2.elb.amazonaws.com";
+    let PORT = 3000;
+    let cart_id = sessionStorage.getItem("cart_id");
+    axios
+      .get(`http://${CART_HOST_ELB}:${PORT}/cart/view/${cart_id}`)
+      .then(response => {
+        console.log("Response from Get Cart:", response.data);
+        this.setState({
+          cart: response.data.items,
+          cart_total: response.data.cart_total,
+          item_count: response.data.items.length
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          addedToCart: false
+        });
+      });
+  }
+
+  removeItem = item_name => {
+    // remove the item passed
+    console.log("itemname:", item_name);
+    let cart = this.state.cart;
+    for (let i in cart) {
+      if (cart[i].item_name === item_name) {
+        console.log("deleted item", cart[i]);
+        cart.splice(i, 1);
+      }
+    }
+
+    // update the cart
+    this.setState({ cart: cart });
+    console.log("updated cart:", this.state.cart);
+    console.log("updated cart:", cart);
+
+    let CART_HOST_ELB = "oregonELB-875160293.us-west-2.elb.amazonaws.com";
+    let PORT = 3000;
+    let data = {
+      id: sessionStorage.getItem("cart_id"),
+      username: sessionStorage.getItem("username"),
+      items: this.state.cart
+    };
+
+    console.log("request body PUT:", data);
+
+    axios
+      .put(`http://${CART_HOST_ELB}:${PORT}/cart/edit`, data)
+      .then(response => {
+        console.log("Response from Put Cart:", response.data);
+        this.setState({
+          cart: response.data.items,
+          cart_total: response.data.cart_total,
+          item_count: response.data.items.length
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          addedToCart: false
+        });
+      });
+  };
+
   render() {
+    console.log("cart:", this.state.cart);
     let item_list = this.state.cart.map(item => {
       return (
-        <tr key={item.id}>
-          <td className="item name col-lg-3">
-            <Link to="">{item.name}</Link>
+        <tr className="row" key={uniqid()}>
+          <td className="item name col">
+            <Link to="">{item.item_name}</Link>
           </td>
-          <td className="item rate col-lg-3">${item.rate}</td>
-          <td className="item quantity col-lg-3">{item.quantity}</td>
-          <td className="item subtotal col-lg-3">{item.subtotal}</td>
+          <td className="item rate col">${item.item_rate}</td>
+          <td className="item quantity col">{item.item_quantity}</td>
+          <td className="item subtotal col">{item.item_subtotal}</td>
+          <td className="item col">
+            <img
+              onClick={e => this.removeItem(item.item_name)}
+              src={closeicon}
+              alt="close"
+              style={{ width: 30 }}
+            />
+          </td>
         </tr>
       );
     });
@@ -61,11 +115,12 @@ class Cart extends Component {
           </div>
           <table className="table table-hover">
             <thead>
-              <tr>
-                <th className="item name-header col-lg-3">Item</th>
-                <th className="item rate-header col-lg-3">Rate</th>
-                <th className="item quantity-header col-lg-3">Quantity</th>
-                <th className="item subtotal-header col-lg-3">Subtotal</th>
+              <tr className="row">
+                <th className="item name-header col">Item</th>
+                <th className="item rate-header col">Rate</th>
+                <th className="item quantity-header col">Quantity</th>
+                <th className="item subtotal-header col">Subtotal</th>
+                <th className="item subtotal-header col">Remove</th>
               </tr>
             </thead>
             <tbody
@@ -78,18 +133,18 @@ class Cart extends Component {
           <div className="total-row row">
             <span className="col-lg-8" />
             <div className="item-count col-lg-2">
-              Total Items: {this.state.itemCount}
+              Total Items: {this.state.item_count}
             </div>
             <div className="item-total col-lg-2">
               Order total:{" "}
-              <span className="item-total-value">${this.state.total}</span>
+              <span className="item-total-value">${this.state.cart_total}</span>
             </div>
           </div>
           <div className="total-row row">
             <span className="col-lg-10" />
             <span className="col-lg-2">
               <button
-                onClick={this.addToCart}
+                onClick={this.update}
                 className="btn btn-block btn-login rounded-0"
               >
                 Place Order

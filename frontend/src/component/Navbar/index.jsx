@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link, Redirect } from "react-router-dom";
 import "./index.css";
 import logo from "../../images/shayona-logob.png";
+import storelogo from "../../images/store-logo.png";
 
 //create the Navbar Component
 class Navbar extends Component {
@@ -24,6 +25,11 @@ class Navbar extends Component {
           <div className="container-fluid">
             <div className="navbar-header">
               <Link to="/" alt="homepage">
+                <img
+                  src={storelogo}
+                  className="navbar-brand App-logo"
+                  alt="store logo"
+                />
                 <img src={logo} className="navbar-brand App-logo" alt="logo" />
               </Link>
             </div>

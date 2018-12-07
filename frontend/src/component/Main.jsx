@@ -7,6 +7,7 @@ import Inventory from "./Inventory";
 import ItemDetails from "./ItemDetails";
 import Cart from "./Cart";
 import Orders from "./Orders";
+import HomePage from "./HomePage";
 
 //Create a Main Component
 class Main extends Component {
@@ -15,6 +16,7 @@ class Main extends Component {
       <div>
         {/*Render Different Component based on Route*/}
         <Route path="/" component={Navbar} />
+        <Route path="/" exact component={HomePage} />
         <Route path="/login" exact component={Login} />
         <Route path="/signup" exact component={SignUp} />
         <Route path="/inventory" exact component={Inventory} />
