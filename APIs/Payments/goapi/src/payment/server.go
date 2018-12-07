@@ -14,6 +14,11 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+type Wallet struct {
+	Username 	string 	`json:"username" bson:"username"`
+	Amount		float64 `json:"wallet_amount" bson:"wallet_amount"`
+}
+
 type Item struct {
 	ItemName		string 	`json:"item_name" bson:"item_name"`
 	ItemQuantity	int 	`json:"item_quantity" bson:"item_quantity"`
@@ -31,8 +36,9 @@ type Purchase struct {
 
 // MongoDB Config
 var mongodb_server = "admin:cmpe281@10.0.1.207:27017,10.0.1.217:27017,10.0.1.127:27017,10.0.1.157:27017,10.0.1.160:27017"
-var mongodb_database = "shayona"
-var mongodb_collection = "purchases"
+var mongodb_database 			= "shayona"
+var mongodb_purchase_collection = "purchases"
+var mongodb_wallet_collection 	= "wallets"
 
 // NewServer configures and returns a server
 func NewServer() *negroni.Negroni {
@@ -60,6 +66,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/payments/user", getPaymentsByUserHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/payment/delete/id", deletePaymentByIdHandler(formatter)).Methods("DELETE")
 	mx.HandleFunc("/payments/delete/user", deletePaymentsByUserHandler(formatter)).Methods("DELETE")
+	mx.HandleFunc("/wallet", getWalletHandler(formatter)).Methods("GET")
 }
 
 // API Ping Handler
@@ -78,7 +85,7 @@ func getPaymentsHandler(formatter *render.Render) http.HandlerFunc {
 		}
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
-		c := session.DB(mongodb_database).C(mongodb_collection)
+		c := session.DB(mongodb_database).C(mongodb_purchase_collection)
 
 		var purchases []bson.M
 		err = c.Find(nil).All(&purchases)
@@ -116,7 +123,7 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 		}
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
-		c := session.DB(mongodb_database).C(mongodb_collection)
+		c := session.DB(mongodb_database).C(mongodb_purchase_collection)
 
 		uuid, _ := uuid.NewV4()
 		entry := Purchase{uuid.String(),
@@ -151,7 +158,7 @@ func getPaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 		}
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
-		c := session.DB(mongodb_database).C(mongodb_collection)
+		c := session.DB(mongodb_database).C(mongodb_purchase_collection)
 
 		var purchases []bson.M
 		err = c.Find(bson.M{"user":t.Username}).All(&purchases)
@@ -182,9 +189,10 @@ func deletePaymentByIdHandler(formatter *render.Render) http.HandlerFunc {
 		}
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
-		c := session.DB(mongodb_database).C(mongodb_collection)
+		c := session.DB(mongodb_database).C(mongodb_purchase_collection)
 
 		err = c.Remove(bson.M{"_id":t.Id})
+
 		if err != nil {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchase with this id"})
 		} else {
@@ -208,15 +216,53 @@ func deletePaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
+
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
-		c := session.DB(mongodb_database).C(mongodb_collection)
+		c := session.DB(mongodb_database).C(mongodb_purchase_collection)
 
-		_, err = c.RemoveAll(bson.M{"user":t.Username})
+		_, err = c.RemoveAll(bson.M{"username":t.Username})
 		if err != nil {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases from this user"})
 		} else {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchases deleted"})
+		}
+	}
+}
+
+
+// API Get Wallet Handler - Get Wallet for a specified user
+func getWalletHandler(formatter *render.Render) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+
+		decoder := json.NewDecoder(req.Body)
+		var body Wallet
+		err := decoder.Decode(&body)
+		if err != nil {
+			fmt.Println("Error parsing the request's body: ", err)
+		}
+
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_wallet_collection)
+
+		var wallet []bson.M
+		err = c.Find(bson.M{"username":body.Username}).All(&wallet)
+
+		if err != nil {
+			fmt.Println("Error searching DB for wallet: ", err)
+		} else {
+			if (wallet == nil) {
+				formatter.JSON(w, http.StatusOK, struct{ Test string }{"No wallet for this user"})
+			} else {
+				fmt.Println("Wallet: ", wallet)
+				formatter.JSON(w, http.StatusOK, wallet)
+			}
+
 		}
 	}
 }
