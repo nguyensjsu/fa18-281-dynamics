@@ -38,6 +38,20 @@ class Navbar extends Component {
               <ul className="nav navbar-right">
                 <li className="nav-item">
                   <Link
+                    to="/inventory"
+                    style={{
+                      borderRadius: 5,
+                      color: "#0067db",
+                      marginRight: 20,
+                      backgroundColor: "transparent"
+                    }}
+                    className="btn btn-primary"
+                  >
+                    Buy Groceries
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link
                     to="/wallet"
                     style={{
                       background: `url(${walleticon}) 10px 10px no-repeat`,

@@ -11,7 +11,7 @@ class Cart extends Component {
     this.state = {
       cart: [],
       total: 0,
-      itemCount: 0
+      item_count: 0
     };
   }
 
@@ -26,7 +26,7 @@ class Cart extends Component {
         this.setState({
           cart: response.data.items,
           cart_total: response.data.cart_total,
-          item_count: response.data.items.length
+          item_count: this.props.location.state
         });
       })
       .catch(err => {
@@ -141,7 +141,22 @@ class Cart extends Component {
             </div>
           </div>
           <div className="total-row row">
-            <span className="col-lg-10" />
+            <span className="col-lg-8" />
+            <span className="col-lg-2">
+              <Link
+                to={{
+                  pathname: "/inventory",
+                  state: {
+                    cart: this.state.cart,
+                    cart_total: this.state.cart_total,
+                    item_count: this.state.itemCount
+                  }
+                }}
+                className="btn btn-block btn-login rounded-0"
+              >
+                Go Back
+              </Link>
+            </span>
             <span className="col-lg-2">
               <Link
                 to={{
@@ -149,7 +164,7 @@ class Cart extends Component {
                   state: {
                     cart: this.state.cart,
                     cart_total: this.state.cart_total,
-                    item_count: this.state.itemCount
+                    item_count: this.state.item_count
                   }
                 }}
                 className="btn btn-block btn-login rounded-0"

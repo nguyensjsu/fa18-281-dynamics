@@ -34,7 +34,7 @@ class Inventory extends Component {
         }
       ],
       cart_total: 0,
-      itemCount: 0,
+      item_count: 0,
       addedToCart: false
     };
   }
@@ -92,11 +92,11 @@ class Inventory extends Component {
 
   itemCountChangeHandler() {
     let inventory = this.state.inventory;
-    let itemCount = 0;
+    let item_count = 0;
     for (let item of inventory) {
-      itemCount += item.item_quantity;
+      item_count += item.item_quantity;
     }
-    this.setState({ itemCount: parseFloat(itemCount.toFixed(2)) });
+    this.setState({ item_count: parseFloat(item_count.toFixed(2)) });
   }
 
   render() {
@@ -123,7 +123,9 @@ class Inventory extends Component {
     });
     return (
       <React.Fragment>
-        {this.state.addedToCart && <Redirect to="/cart" />}
+        {this.state.addedToCart && (
+          <Redirect to={{ pathname: "/cart", state: this.state.item_count }} />
+        )}
         <div className="container">
           <div id="title">
             <h2>Inventory</h2>
@@ -150,7 +152,7 @@ class Inventory extends Component {
           <div className="total-row row">
             <span className="col-lg-8" />
             <div className="item-count col-lg-2">
-              Total Items: {this.state.itemCount}
+              Total Items: {this.state.item_count}
             </div>
             <div className="item-total col-lg-2">
               Order total:{" "}
