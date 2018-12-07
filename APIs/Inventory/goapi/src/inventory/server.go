@@ -93,10 +93,10 @@ func updateInventoryHandler(formatter *render.Render) http.HandlerFunc {
 			for _, item := range i.Items {
 				fmt.Println("Display Inv ", item.ItemName)
 				sub_quantity := item.ItemQuantity
-				err = c.Find(bson.M{"Item_name" : item.ItemName}).One(&actual_inventory)		
-				actual_quantity := actual_inventory["Item_inventory"].(int) - int(sub_quantity)
-				query := bson.M{"Item_name" : item.ItemName}
-		        change := bson.M{"$set": bson.M{ "Item_inventory" : actual_quantity}}
+				err = c.Find(bson.M{"item_name" : item.ItemName}).One(&actual_inventory)		
+				actual_quantity := actual_inventory["item_inventory"].(int) - int(sub_quantity)
+				query := bson.M{"item_name" : item.ItemName}
+		        change := bson.M{"$set": bson.M{ "item_inventory" : actual_quantity}}
 		        err = c.Update(query, change)
 		        if err != nil {
 		                log.Fatal(err)
@@ -189,7 +189,7 @@ func deleteInventoryByItem(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 
-		err = c.Remove(bson.M{"Item_name":i.Item_name})
+		err = c.Remove(bson.M{"item_name":i.Item_name})
 		if err != nil {
 			formatter.JSON(w, http.StatusOK, struct{ Info string }{"No items in the inventory with this item name"})
 		} else {

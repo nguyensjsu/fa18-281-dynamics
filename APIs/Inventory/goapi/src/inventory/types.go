@@ -1,11 +1,14 @@
 package main
 
 type InventoryItem struct {
-	Item_id 			int     `json:"Item_id" bson:"Item_id"`
-	Item_name     		string	`json:"Item_name" bson:"Item_name"`
-	Item_description 	string	`json:"Item_description" bson:"Item_description"`
-	Item_inventory 		int 	`json:"Item_inventory" bson:"Item_inventory"`
-	Item_rate    		float64 `json:"Item_rate" bson:"Item_rate"`
+	Item_id 			int     `json:"item_id" bson:"item_id"`
+	Item_name     		string	`json:"item_name" bson:"item_name"`
+	Item_description 	string	`json:"item_description" bson:"item_description"`
+	Item_inventory 		int 	`json:"item_inventory" bson:"item_inventory"`
+	Item_rate    		float64 `json:"item_rate" bson:"item_rate"`
+	Item_quantity  		int 	`json:"item_quantity" bson:"item_quantity"`
+	Item_subtotal		float64	`json:"item_subtotal" bson:"item_subtotal"`
+
 }
 
 type Item struct {
