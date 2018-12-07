@@ -35,7 +35,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/inventory", getInventoryHandler(formatter)).Methods("GET")
 	// mx.HandleFunc("/inventory", addItemToInventoryHandler(formatter)).Methods("POST")
-	// mx.HandleFunc("/inventory", updateInventoryHandler(formatter)).Methods("PUT")
+	mx.HandleFunc("/inventory/update", updateInventoryHandler(formatter)).Methods("PUT")
 	// mx.HandleFunc("/addInventoryItem", addItemHandler(formatter)).Methods("POST")
 	mx.HandleFunc("/inventory/delete/item_name", deleteInventoryByItem(formatter)).Methods("DELETE")
 	mx.HandleFunc("/inventory/delete", deleteInventoryHandler(formatter)).Methods("DELETE")
@@ -70,6 +70,47 @@ func getInventoryHandler(formatter *render.Render) http.HandlerFunc {
 }
 
 
+
+
+
+// API Payment Handler - Insert a new purchase after payment
+func updateInventoryHandler(formatter *render.Render) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+
+		decoder := json.NewDecoder(req.Body)
+		var i ItemCart
+		err := decoder.Decode(&i)
+		if err != nil {
+			fmt.Println("Error parsing the request's body: ", err)
+		} else {
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_collection)
+		var actual_inventory bson.M
+			for _, item := range i.Items {
+				fmt.Println("Display Inv ", item.ItemName)
+				sub_quantity := item.ItemQuantity
+				// fmt.Println("Item quantity ", quantity)
+				err = c.Find(bson.M{"Item_name" : item.ItemName}).One(&actual_inventory)		
+				actual_quantity := actual_inventory["Item_inventory"].(float64) - float64(sub_quantity)
+				// formatter.JSON(w, http.StatusOK, actual_quantity)
+				query := bson.M{"Item_name" : item.ItemName}
+		        change := bson.M{"$set": bson.M{ "Item_inventory" : actual_quantity}}
+		        err = c.Update(query, change)
+		        if err != nil {
+		                log.Fatal(err)
+		                formatter.JSON(w, http.StatusOK, struct{ Test string }{"Update failed"})
+		        } else {
+				formatter.JSON(w, http.StatusOK, struct{ Test string }{"Updated inventory items successfully"})
+					}
+				}
+			}
+		}
+	}
 
 
 // // API item to Inventory
@@ -168,8 +209,8 @@ func deleteInventoryByItem(formatter *render.Render) http.HandlerFunc {
 //sample document
 // db.createCollection("InventoryItem")
 
-// db.InventoryItem.insert({'Item_id':1,'Item_name':'milk','Item_description':'This is milk','Item_inventory':5,'Item_rate':15})
-// db.InventoryItem.insert({'Item_id':1,'Item_name':'yogurt','Item_description':'This is yogurt','Item_inventory':3,'Item_rate':12})
+// db.InventoryItem.insert({'Item_id':1,'Item_name':'milk','Item_description':'This is milk','Item_inventory':20,'Item_rate':15})
+// db.InventoryItem.insert({'Item_id':1,'Item_name':'yogurt','Item_description':'This is yogurt','Item_inventory':100,'Item_rate':12})
 
 // use admin
 // db.createUser( {

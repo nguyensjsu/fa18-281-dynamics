@@ -8,3 +8,14 @@ type InventoryItem struct {
 	Item_rate    		float64 `json:"item_rate" bson:"item_rate"`
 }
 
+type Item struct {
+	ItemName		string 	`json:"item_name" bson:"item_name"`
+	ItemQuantity	int 	`json:"item_quantity" bson:"item_quantity"`
+	Rate			float64 `json:"item_rate" bson:"item_rate"`
+}
+
+type ItemCart struct {
+	Id 			string 	`json:"_id" bson:"_id"`
+	Items 		[]Item  `json:"items" bson:"items"`
+}
+
