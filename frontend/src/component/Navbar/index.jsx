@@ -75,6 +75,7 @@ class Navbar extends Component {
               </ul>
             ) : (
               <ul className="nav navbar-right">
+                <Redirect to="/" />
                 <Link to="/login">
                   <button
                     id="login-btn"

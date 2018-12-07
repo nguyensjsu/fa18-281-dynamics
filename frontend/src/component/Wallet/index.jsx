@@ -1,10 +1,12 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 class Wallet extends Component {
   constructor() {
     super();
     this.state = {
-      wallet: 20,
+      wallet: 0,
+      add_money: 0,
       showPaymentOptions: false
     };
   }
@@ -13,9 +15,28 @@ class Wallet extends Component {
     this.setState({ showPaymentOptions: true });
   };
 
-  amountChangeHandler = e => {
-    this.setState({ wallet: e.target.value });
+  addAmountChangeHandler = e => {
+    this.setState({ add_money: e.target.value });
   };
+
+  addMoney = e => {
+    let PAYMENT_HOST_ELB = "payments-1051217824.us-west-2.elb.amazonaws.com";
+    let PORT = 3000;
+    let data = {
+      username: sessionStorage.getItem("username"),
+      wallet_amount: parseInt(this.state.add_money)
+    };
+    console.log("add money:", data);
+    axios
+      .put(`http://${PAYMENT_HOST_ELB}:${PORT}/wallet/add`, data)
+      .then(response => {
+        console.log("response from PUT ADD MONEY", response);
+        this.setState({
+          wallet: response.data.wallet_amount
+        });
+      });
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -55,7 +76,7 @@ class Wallet extends Component {
                 </h3>
               </div>
               <div className="card-body">
-                <form method="POST">
+                <div>
                   <div className="form-group">
                     <input
                       type="number"
@@ -102,19 +123,19 @@ class Wallet extends Component {
                   </div>
                   <div className="form-group">
                     <input
-                      onChange={this.amountChangeHandler}
+                      onChange={this.addAmountChangeHandler}
                       type="number"
                       className="form-control form-control-lg rounded-0"
                       placeholder="Amount"
                     />
                   </div>
                   <button
-                    onClick={this.addMoney} // to be implemented
+                    onClick={this.addMoney}
                     className="btn btn-lg btn-block btn-login rounded-0"
                   >
                     Add Money
                   </button>
-                </form>
+                </div>
               </div>
             </div>
           ) : (
@@ -123,6 +144,36 @@ class Wallet extends Component {
         </div>
       </React.Fragment>
     );
+  }
+
+  componentDidMount() {
+    let PAYMENT_HOST_ELB = "payments-1051217824.us-west-2.elb.amazonaws.com";
+    let PORT = 3000;
+    let username = sessionStorage.getItem("username");
+    axios
+      .get(`http://${PAYMENT_HOST_ELB}:${PORT}/wallet/${username}`)
+      .then(response => {
+        console.log("Status Code GET Wallet:", response);
+        if (response.status === 204) {
+          // user wallet doesn't exist
+          let data = {
+            username: sessionStorage.getItem("username"),
+            wallet_amount: this.state.wallet
+          };
+          axios
+            .post(`http://${PAYMENT_HOST_ELB}:${PORT}/wallet`, data)
+            .then(response => {
+              console.log("Status Code POST Wallet:", response.status);
+              console.log("response from POST Wallet:", response);
+              this.setState({
+                wallet: response.data.wallet_amount
+              });
+            });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 }
 
