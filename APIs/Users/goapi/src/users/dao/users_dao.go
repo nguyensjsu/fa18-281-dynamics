@@ -51,3 +51,9 @@ func (m *UsersDAO) FindByUsername(username string) (User, error) {
 
 	return user, err
 }
+
+// Delete an existing user
+func (m *UsersDAO) DeleteUser(username string) error {
+	err := db.C(COLLECTION).Remove(bson.M{"username": username})
+	return err
+}
