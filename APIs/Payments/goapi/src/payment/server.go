@@ -32,7 +32,7 @@ type Purchase struct {
 	TotalItems 	int 	`json:"item_count" bson:"item_count"`
 	CartTotal 	float64 `json:"cart_total" bson:"cart_total"`
 	Items 		[]Item  `json:"items" bson:"items"`
-	PaymentInfo string 	`json:"payment_info" bson:"payment_info"`
+	//PaymentInfo string 	`json:"payment_info" bson:"payment_info"`
 }
 
 // MongoDB Config
@@ -76,7 +76,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 // API Ping Handler
 func pingHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchase API version 1.0 alive!"})
+		formatter.JSON(w, http.StatusOK, struct{ Result string }{"Purchase API version 1.0 alive!"})
 	}
 }
 
@@ -93,8 +93,8 @@ func getPaymentsHandler(formatter *render.Render) http.HandlerFunc {
 
 		var purchases []bson.M
 		err = c.Find(nil).All(&purchases)
-		if err != nil {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases yet!"})
+		if (err != nil || purchases == nil) {
+			formatter.JSON(w, http.StatusOK, struct{ Result string }{"No purchases yet!"})
 		} else {
 			fmt.Println("All purchases: ", purchases)
 			formatter.JSON(w, http.StatusOK, purchases)
@@ -135,8 +135,7 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 				t.Username,
 				totalItems,
 				math.Floor(totalCost*100)/100,
-				t.Items,
-				t.PaymentInfo}
+				t.Items}
 		err = c.Insert(entry)
 
 		if err != nil {
@@ -171,8 +170,8 @@ func getPaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 
 		var purchases []bson.M
 		err = c.Find(bson.M{"user":t.Username}).All(&purchases)
-		if err != nil {
-			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No purchases from this user"})
+		if (err != nil || purchases == nil){
+			formatter.JSON(w, http.StatusOK, struct{ Result string }{"No purchases from this user"})
 		} else {
 			fmt.Println("All purchases: ", purchases)
 			formatter.JSON(w, http.StatusOK, purchases)
@@ -203,9 +202,9 @@ func deletePaymentByIdHandler(formatter *render.Render) http.HandlerFunc {
 		err = c.Remove(bson.M{"_id":t.Id})
 
 		if err != nil {
-			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No purchase with this id"})
+			formatter.JSON(w, http.StatusOK, struct{ Result string }{"No purchase with this id"})
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchase deleted"})
+			formatter.JSON(w, http.StatusOK, struct{ Result string }{"Purchase deleted"})
 		}
 	}
 }
@@ -232,9 +231,9 @@ func deletePaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 
 		_, err = c.RemoveAll(bson.M{"username":t.Username})
 		if err != nil {
-			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No purchases from this user"})
+			formatter.JSON(w, http.StatusOK, struct{ Result string }{"No purchases from this user"})
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchases deleted"})
+			formatter.JSON(w, http.StatusOK, struct{ Result string }{"Purchases deleted"})
 		}
 	}
 }
@@ -265,8 +264,9 @@ func getWalletHandler(formatter *render.Render) http.HandlerFunc {
 		if err != nil {
 			fmt.Println("Error searching DB for wallet: ", err)
 		} else {
-			if (wallet == nil) {
-				formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No wallet for this user"})
+			fmt.Println("Wallet:", wallet)
+			if (len(wallet) == 0) {
+				formatter.JSON(w, http.StatusOK, struct{ Result string }{"No wallet for this user"})
 			} else {
 				fmt.Println("Wallet: ", wallet)
 				formatter.JSON(w, http.StatusOK, wallet)
@@ -298,6 +298,7 @@ func addWalletHandler(formatter *render.Render) http.HandlerFunc {
 		c := session.DB(mongodb_database).C(mongodb_wallet_collection)
 
 		entry := Wallet{ body.Username, body.Amount }
+		// TODO CHECK IF USER ALREADY HAS WALLET
 		err = c.Insert(entry)
 
 		if err != nil {
@@ -336,7 +337,7 @@ func addMoneyToWalletHandler(formatter *render.Render) http.HandlerFunc {
 		err = c.Find(bson.M{"username" : body.Username}).One(&currentWallet)
 
 		if (err != nil) {
-			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No wallet for this user"})
+			formatter.JSON(w, http.StatusOK, struct{ Result string }{"No wallet for this user"})
 		} else {
 			currentAmount := currentWallet["wallet_amount"].(float64)
 	        query := bson.M{"username" : body.Username}
@@ -384,7 +385,7 @@ func payWalletHandler(formatter *render.Render) http.HandlerFunc {
 		err = c.Find(bson.M{"username" : body.Username}).One(&currentWallet)
 
 		if (err != nil) {
-			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No wallet for this user"})
+			formatter.JSON(w, http.StatusOK, struct{ Result string }{"No wallet for this user"})
 		} else {
 			currentAmount := currentWallet["wallet_amount"].(float64)
 	        query := bson.M{"username" : body.Username}
