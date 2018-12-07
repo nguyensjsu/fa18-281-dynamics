@@ -3,6 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import "./index.css";
 import logo from "../../images/shayona-logob.png";
 import storelogo from "../../images/store-logo.png";
+import walleticon from "../../images/wallet-icon.png";
 
 //create the Navbar Component
 class Navbar extends Component {
@@ -35,6 +36,21 @@ class Navbar extends Component {
             </div>
             {username ? (
               <ul className="nav navbar-right">
+                <li className="nav-item">
+                  <Link
+                    to="/wallet"
+                    style={{
+                      background: `url(${walleticon}) 10px 10px no-repeat`,
+                      borderRadius: 5,
+                      color: "#0067db",
+                      marginRight: 20,
+                      paddingLeft: 30
+                    }}
+                    className="btn btn-primary"
+                  >
+                    Shayona Wallet
+                  </Link>
+                </li>
                 <li className="nav-item dropdown">
                   <button
                     id="login-btn"
