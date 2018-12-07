@@ -38,7 +38,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/getReviews", getReviewsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/postReview", postReviewHandler(formatter)).Methods("POST")
 	mx.HandleFunc("/updateReview", updateReviewHandler(formatter)).Methods("PUT")
-	//mx.HandleFunc("/deleteReview", deleteReviewHandler(formatter)).Methods("DELETE")
+	mx.HandleFunc("/deleteReview", deleteReviewHandler(formatter)).Methods("DELETE")
 
 }
 
@@ -142,14 +142,14 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
-/*
+
 // API Delete a Review Handler.
 func deleteReviewHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		var m Review
 		_ = json.NewDecoder(req.Body).Decode(&m)
-		fmt.Println("Review is: ", m.Id)
+		fmt.Println("Review is: ", m.Reviews)
 		session, err := mgo.Dial(mongodb_server)
 		if err != nil {
 			panic(err)
@@ -163,11 +163,11 @@ func deleteReviewHandler(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 
-		err = c.Remove(bson.M{
-			"_id" : m.Id,
-			"itemid" : m.ItemId,
-			"userid" : m.UserId,
-		})
+		query := bson.M{
+			"itemname": m.ItemName,
+		}
+		change := bson.M{"$pull": bson.M{ "reviews" :  bson.M{"$in": m.Reviews } }}
+		err = c.Update(query, change)
 
 		if err != nil {
 			fmt.Println("Error while deleting reviews: ", err)
@@ -176,4 +176,3 @@ func deleteReviewHandler(formatter *render.Render) http.HandlerFunc {
 		}
 	}
 }
-*/
