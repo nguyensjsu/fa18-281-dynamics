@@ -134,9 +134,9 @@ func addItemToInventoryHandler(formatter *render.Render) http.HandlerFunc {
 		err = c.Insert(entry)
 		if err != nil {
 			fmt.Println("Error while adding item: ", err)
-			formatter.JSON(w, http.StatusInternalServerError, struct{ Response error }{err})
+			formatter.JSON(w, http.StatusOK, struct{ Info string }{"Error whilw adding items"})
 		} else {
-			formatter.JSON(w, http.StatusNoContent, struct{ Response string }{"Item added"})
+			formatter.JSON(w, http.StatusOK, struct{ Info string }{"Item added to the inventory"})
 		}
 	}
 }
