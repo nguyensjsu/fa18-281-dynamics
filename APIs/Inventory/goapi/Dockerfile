@@ -5,4 +5,4 @@ ADD . /app/
 WORKDIR /app 
 ENV GOPATH /app
 RUN cd /app ; go install inventory
-CMD ["/app/bin/goapi"]
+CMD ["/app/bin/inventory"]

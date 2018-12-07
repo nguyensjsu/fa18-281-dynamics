@@ -15,7 +15,8 @@ import (
 
 
 // MongoDB Config
-var mongodb_server = "mongodb://admin:admin@54.153.77.225"
+var mongodb_server = "mongodb://admin:admin@10.0.5.148:27017,10.0.6.227:27017,10.0.5.134:27017,10.0.6.219:27017,10.0.5.13:27017"
+// var mongodb_server = "mongodb://admin:admin@13.52.14.112"
 var mongodb_database = "inventory"
 var mongodb_collection = "InventoryItem"
 
@@ -34,9 +35,8 @@ func NewServer() *negroni.Negroni {
 func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/inventory", getInventoryHandler(formatter)).Methods("GET")
-	// mx.HandleFunc("/inventory", addItemToInventoryHandler(formatter)).Methods("POST")
+	mx.HandleFunc("/inventory", addItemToInventoryHandler(formatter)).Methods("POST")
 	mx.HandleFunc("/inventory/update", updateInventoryHandler(formatter)).Methods("PUT")
-	// mx.HandleFunc("/addInventoryItem", addItemHandler(formatter)).Methods("POST")
 	mx.HandleFunc("/inventory/delete/item_name", deleteInventoryByItem(formatter)).Methods("DELETE")
 	mx.HandleFunc("/inventory/delete", deleteInventoryHandler(formatter)).Methods("DELETE")
 }
@@ -44,11 +44,11 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 // API Ping Handler
 func pingHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct{ Test string }{"Ping works!"})
+		formatter.JSON(w, http.StatusOK, struct{ Info string }{"Ping works!"})
 	}
 }
 
-// API GetInventoryItems Handler
+// API GetInventoryItems Handler -- get all the items from the inventory
 func getInventoryHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
@@ -72,8 +72,7 @@ func getInventoryHandler(formatter *render.Render) http.HandlerFunc {
 
 
 
-
-// API Payment Handler - Insert a new purchase after payment
+// API update item inventory - decrement the item inventory after processing orders
 func updateInventoryHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
@@ -94,63 +93,56 @@ func updateInventoryHandler(formatter *render.Render) http.HandlerFunc {
 			for _, item := range i.Items {
 				fmt.Println("Display Inv ", item.ItemName)
 				sub_quantity := item.ItemQuantity
-				// fmt.Println("Item quantity ", quantity)
 				err = c.Find(bson.M{"Item_name" : item.ItemName}).One(&actual_inventory)		
-				actual_quantity := actual_inventory["Item_inventory"].(float64) - float64(sub_quantity)
-				// formatter.JSON(w, http.StatusOK, actual_quantity)
+				actual_quantity := actual_inventory["Item_inventory"].(int) - int(sub_quantity)
 				query := bson.M{"Item_name" : item.ItemName}
 		        change := bson.M{"$set": bson.M{ "Item_inventory" : actual_quantity}}
 		        err = c.Update(query, change)
 		        if err != nil {
 		                log.Fatal(err)
-		                formatter.JSON(w, http.StatusOK, struct{ Test string }{"Update failed"})
-		        } else {
-				formatter.JSON(w, http.StatusOK, struct{ Test string }{"Updated inventory items successfully"})
-					}
+		                formatter.JSON(w, http.StatusOK, struct{ Info string }{"Update failed"})
+		        } 
 				}
+				formatter.JSON(w, http.StatusOK, struct{ Info string }{"Updated inventory items successfully"})
 			}
+
 		}
 	}
 
 
-// // API item to Inventory
-// func addItemToInventoryHandler(formatter *render.Render) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, req *http.Request) {
+// API Add an item to inventory - Add an item to the inventory
+func addItemToInventoryHandler(formatter *render.Render) http.HandlerFunc {
 
-// 		decoder := json.NewDecoder(req.Body)
-// 		var i InventoryItem
-// 		err := decoder.Decode(&i)
-// 		if err != nil {
-// 			fmt.Println("Error parsing the request's body: ", err)
-// 		} 
-// 		session, err := mgo.Dial(mongodb_server)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-// 		defer session.Close()
-// 		session.SetMode(mgo.Monotonic, true)
-// 		c := session.DB(mongodb_database).C(mongodb_collection)
-
-// 		uuid, _ := uuid.NewV4()
-// 		entry := InventoryItem{uuid.String(),
-// 				i.Item_name,
-// 				i.Item_description,
-// 				i.Item_id,
-// 				i.Item_rate,
-// 				i.Item_inventory,
-// 			}
-// 		err = c.Insert(entry)
-// 		if err != nil {
-// 			fmt.Println("Error while inserting purchase: ", err)
-// 		} else {
-// 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Item added to Inventory"})
-// 		}
-
-// 	}
-// }
+	return func(w http.ResponseWriter, req *http.Request) {
+		var i InventoryItem
+		_ = json.NewDecoder(req.Body).Decode(&i)
+		fmt.Println("Item is: ", i.Item_name)
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_collection)
+		entry := InventoryItem{
+			Item_id: i.Item_id,
+			Item_name: i.Item_name,
+			Item_description: i.Item_description,
+			Item_inventory: i.Item_inventory,
+			Item_rate: i.Item_rate,
+		}
+		err = c.Insert(entry)
+		if err != nil {
+			fmt.Println("Error while adding item: ", err)
+			formatter.JSON(w, http.StatusInternalServerError, struct{ Response error }{err})
+		} else {
+			formatter.JSON(w, http.StatusNoContent, struct{ Response string }{"Item added"})
+		}
+	}
+}
 
 
-// API Delete all Inventory Items
+// API delete All Item - Delete all Inventory Items
 func deleteInventoryHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
@@ -171,9 +163,9 @@ func deleteInventoryHandler(formatter *render.Render) http.HandlerFunc {
 
 		_, err = c.RemoveAll(bson.M{})
 		if err != nil {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No items in the inventory"})
+			formatter.JSON(w, http.StatusOK, struct{ Info string }{"No items in the inventory"})
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"All the items in the inventory deleted"})
+			formatter.JSON(w, http.StatusOK, struct{ Info string }{"All the items in the inventory deleted"})
 		}
 	}
 }
@@ -199,12 +191,16 @@ func deleteInventoryByItem(formatter *render.Render) http.HandlerFunc {
 
 		err = c.Remove(bson.M{"Item_name":i.Item_name})
 		if err != nil {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No items in the inventory with this item name"})
+			formatter.JSON(w, http.StatusOK, struct{ Info string }{"No items in the inventory with this item name"})
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Item deleted"})
+			formatter.JSON(w, http.StatusOK, struct{ Info string }{"Item deleted"})
 		}
 	}
 }
+
+
+
+
 
 //sample document
 // db.createCollection("InventoryItem")
@@ -221,5 +217,8 @@ func deleteInventoryByItem(formatter *render.Render) http.HandlerFunc {
 
 //const IP_MONGODB_DATABASE = 'mongodb://admin:admin@52.53.77.103:27017/admin';
 // mongo -u admin -p admin --authenticationDatabase admin
+
+
+
 
 
