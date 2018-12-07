@@ -37,8 +37,8 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/getReviews", getReviewsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/postReview", postReviewHandler(formatter)).Methods("POST")
-	mx.HandleFunc("/updateReview", updateReviewHandler(formatter)).Methods("PUT")
-	mx.HandleFunc("/deleteReview", deleteReviewHandler(formatter)).Methods("DELETE")
+	//mx.HandleFunc("/updateReview", updateReviewHandler(formatter)).Methods("PUT")
+	//mx.HandleFunc("/deleteReview", deleteReviewHandler(formatter)).Methods("DELETE")
 
 }
 
@@ -70,7 +70,7 @@ func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(results[0].ItemId)
+		fmt.Println(results)
 		formatter.JSON(w, http.StatusOK, results)
 	}
 }
@@ -81,7 +81,7 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		var m Review
 		_ = json.NewDecoder(req.Body).Decode(&m)
-		fmt.Println("Review is: ", m.Review, " ", m.ItemId," ", m.UserId)
+		fmt.Println("Review is: ", m.ItemName, " ", m.Reviews)
 		session, err := mgo.Dial(mongodb_server)
 		if err != nil {
 			panic(err)
@@ -95,9 +95,8 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 		entry := Review{
-			Review: m.Review,
-			UserId: m.UserId,
-			ItemId: m.ItemId,
+			ItemName: m.ItemName,
+			Reviews: m.Reviews,
 		}
 		err = c.Insert(entry)
 		if err != nil {
@@ -108,7 +107,7 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
-
+/*
 // API Update a Review Handler.
 func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 
@@ -178,3 +177,4 @@ func deleteReviewHandler(formatter *render.Render) http.HandlerFunc {
 		}
 	}
 }
+*/

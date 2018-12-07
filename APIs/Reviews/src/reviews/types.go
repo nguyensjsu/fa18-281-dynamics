@@ -6,7 +6,7 @@ type Review struct {
 	Id      	bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	ItemName	string
 
-	Items []struct {
+	Reviews []struct {
 		ReviewName 		string
 		ReviewSummary 	string
 		Review 			string
