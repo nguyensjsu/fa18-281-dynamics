@@ -1,0 +1,171 @@
+{
+	"info": {
+		"_postman_id": "669271fd-7380-46a0-8929-d16ac7d63ca7",
+		"name": "Inventory",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Ping Test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/ping",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Items from Inventory",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/inventory",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"inventory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Item to Inventory",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"item_id\": 7,\n\"item_name\": \"Eggs\",\n\"item_description\": \"This is an egg.\",\n\"item_inventory\": 23,\n\"item_rate\": 11.22,\n\"item_quantity\" : 0,\n\"item_subtotal\" : 0\n}"
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/inventory",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"inventory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete all items in the inventory",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/inventory/delete",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"inventory",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete particular item from inventory",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"item_name\":\"bread\"\n}"
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/inventory/delete/item_name",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"inventory",
+						"delete",
+						"item_name"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Decrement Item quantities after processing",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"74ce66e2-553b-4247-a199-de4497db2d4d\",\n    \"username\": \"CMPE281User3\",\n    \"items\": [\n        {\n            \"item_name\": \"lettuce\",\n            \"item_quantity\":10 ,\n            \"item_rate\": 3.3,\n            \"item_subtotal\": 9.9\n        }\n    ],\n    \"cart_total\": 9.9\n}\n    "
+				},
+				"url": {
+					"raw": "{{host}}:{{port}}/inventory/update",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"inventory",
+						"update"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
