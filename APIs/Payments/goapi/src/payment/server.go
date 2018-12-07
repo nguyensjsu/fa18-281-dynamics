@@ -67,6 +67,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/payment/delete/id", deletePaymentByIdHandler(formatter)).Methods("DELETE")
 	mx.HandleFunc("/payments/delete/user", deletePaymentsByUserHandler(formatter)).Methods("DELETE")
 	mx.HandleFunc("/wallet", getWalletHandler(formatter)).Methods("GET")
+	mx.HandleFunc("/wallet", addWalletHandler(formatter)).Methods("POST")
 }
 
 // API Ping Handler
@@ -263,6 +264,36 @@ func getWalletHandler(formatter *render.Render) http.HandlerFunc {
 				formatter.JSON(w, http.StatusOK, wallet)
 			}
 
+		}
+	}
+}
+
+func addWalletHandler(formatter *render.Render) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+
+		decoder := json.NewDecoder(req.Body)
+		var body Wallet
+		err := decoder.Decode(&body)
+		if err != nil {
+			fmt.Println("Error parsing the request's body: ", err)
+		}
+
+		session, err := mgo.Dial(mongodb_server)
+		if err != nil {
+			panic(err)
+		}
+
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_wallet_collection)
+
+		entry := Wallet{ body.Username, body.Amount }
+		err = c.Insert(entry)
+
+		if err != nil {
+			fmt.Println("Error while inserting wallet: ", err)
+		} else {
+			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Wallet added"})
 		}
 	}
 }
