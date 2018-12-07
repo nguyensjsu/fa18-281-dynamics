@@ -71,7 +71,11 @@ func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 			log.Fatal(err)
 		}
 		fmt.Println(results)
-		formatter.JSON(w, http.StatusOK, results)
+		if results != nil {
+			formatter.JSON(w, http.StatusOK, results)
+		}else{
+			formatter.JSON(w, http.StatusNoContent, struct{ Response string }{"No reviews found for the given ID"})
+		}
 	}
 }
 
@@ -101,8 +105,9 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 		err = c.Insert(entry)
 		if err != nil {
 			fmt.Println("Error while adding reviews: ", err)
+			formatter.JSON(w, http.StatusInternalServerError, struct{ Response error }{err})
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Review added"})
+			formatter.JSON(w, http.StatusNoContent, struct{ Response string }{"Review added"})
 		}
 	}
 }
@@ -136,8 +141,9 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 
 		if err != nil {
 			fmt.Println("Error while updating reviews: ", err)
+			formatter.JSON(w, http.StatusInternalServerError, struct{ Response error }{err})
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Review updated"})
+			formatter.JSON(w, http.StatusOK, struct{ Response string }{"Review updated"})
 		}
 	}
 }
@@ -171,8 +177,9 @@ func deleteReviewHandler(formatter *render.Render) http.HandlerFunc {
 
 		if err != nil {
 			fmt.Println("Error while deleting reviews: ", err)
+			formatter.JSON(w, http.StatusInternalServerError, struct{ Response error }{err})
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Review Deleted"})
+			formatter.JSON(w, http.StatusOK, struct{ Response string }{"Review deleted"})
 		}
 	}
 }
