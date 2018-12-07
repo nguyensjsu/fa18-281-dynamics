@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"github.com/codegangsta/negroni"
@@ -68,6 +69,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/payments/delete/user", deletePaymentsByUserHandler(formatter)).Methods("DELETE")
 	mx.HandleFunc("/wallet", getWalletHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/wallet", addWalletHandler(formatter)).Methods("POST")
+	mx.HandleFunc("/wallet/add", addMoneyToWalletHandler(formatter)).Methods("PUT")
 }
 
 // API Ping Handler
@@ -274,11 +276,13 @@ func addWalletHandler(formatter *render.Render) http.HandlerFunc {
 		decoder := json.NewDecoder(req.Body)
 		var body Wallet
 		err := decoder.Decode(&body)
+
 		if err != nil {
 			fmt.Println("Error parsing the request's body: ", err)
 		}
 
 		session, err := mgo.Dial(mongodb_server)
+
 		if err != nil {
 			panic(err)
 		}
@@ -294,6 +298,49 @@ func addWalletHandler(formatter *render.Render) http.HandlerFunc {
 			fmt.Println("Error while inserting wallet: ", err)
 		} else {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Wallet added"})
+		}
+	}
+}
+
+func addMoneyToWalletHandler(formatter *render.Render) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+
+		decoder := json.NewDecoder(req.Body)
+		var body Wallet
+		err := decoder.Decode(&body)
+
+		if err != nil {
+			fmt.Println("Error parsing the request's body: ", err)
+		}
+
+		session, err := mgo.Dial(mongodb_server)
+
+		if err != nil {
+			panic(err)
+		}
+
+		defer session.Close()
+		session.SetMode(mgo.Monotonic, true)
+		c := session.DB(mongodb_database).C(mongodb_wallet_collection)
+
+		var currentWallet bson.M
+		err = c.Find(bson.M{"username" : body.Username}).One(&currentWallet)
+
+		if (err != nil) {
+			formatter.JSON(w, http.StatusNotFound, struct{ Test string }{"No wallet for this user"})
+		} else {
+			currentAmount := currentWallet["wallet_amount"].(float64)
+	        query := bson.M{"username" : body.Username}
+	        newAmount := currentAmount + body.Amount
+	        change := bson.M{"$set": bson.M{ "wallet_amount" : newAmount}}
+	        err = c.Update(query, change)
+
+			if err != nil {
+				log.Fatal(err)
+	        } else {
+				fmt.Print("Wallet now has $",newAmount,"\n")
+				formatter.JSON(w, http.StatusOK, struct{ Test string }{"Wallet amount updated"})
+	        }
 		}
 	}
 }
