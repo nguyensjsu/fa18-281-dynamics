@@ -1,0 +1,291 @@
+{
+	"info": {
+		"_postman_id": "6342c892-01d1-4952-8b2a-dabd5de3a814",
+		"name": "Shayona",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Shayona | Store Payment API",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"username\": \"mreater\",\r\n\t\"cart_total\": 49.94,\r\n\t\"items\": [{\r\n\t    \"item_name\": \"eggs\",\r\n\t    \"item_quantity\": 1,\r\n\t    \"item_rate\": 4.99\r\n\t    },\r\n\t    {\r\n\t    \"item_name\": \"bacon\",\r\n\t    \"item_quantity\": 5,\r\n\t    \"item_rate\": 8.99\r\n\t    }\r\n\t]\r\n}"
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/payment",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shayona | Ping API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/ping",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shayona | Get All Payments API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/payments",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"payments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shayona | Get Payments Made By User API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/payments/{{username}}",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"payments",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shayona | Delete All Payments Made By User API",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"mreater\"\n}"
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/payments/delete/user",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"payments",
+						"delete",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shayona | Delete Payment By Id API",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"_id\":\"091727dd-18f5-4b29-bec9-51a0397d252c\"\n}"
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/payment/delete/id",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"payment",
+						"delete",
+						"id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shayona | Get User Wallet API",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/wallet/{{username}}",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"wallet",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shayona | Add User Wallet API",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"sbw\",\n\t\"wallet_amount\": 20.00\n}"
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/wallet",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"wallet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shayona | Add Money To User Wallet API",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"mreater\",\n\t\"wallet_amount\": 10\n}"
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/wallet/add",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"wallet",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shayona | Pay Using Wallet API",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"mreater\",\n\t\"wallet_amount\": 5\n}"
+				},
+				"url": {
+					"raw": "http://{{dockerhost}}:3000/wallet/pay",
+					"protocol": "http",
+					"host": [
+						"{{dockerhost}}"
+					],
+					"port": "3000",
+					"path": [
+						"wallet",
+						"pay"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
