@@ -70,7 +70,7 @@ func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(results)
+		fmt.Println(results[0].ItemId)
 		formatter.JSON(w, http.StatusOK, results)
 	}
 }
