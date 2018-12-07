@@ -169,6 +169,10 @@ class Wallet extends Component {
                 wallet: response.data.wallet_amount
               });
             });
+        } else if (response.status === 200) {
+          this.setState({
+            wallet: response.data[0].wallet_amount
+          });
         }
       })
       .catch(err => {

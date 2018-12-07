@@ -11,9 +11,53 @@ class ItemDetails extends Component {
       item_name: this.props.location.state.item_name,
       item_description: this.props.location.state.item_description,
       reviews: [],
-      reviewStatus: false
+      reviewStatus: false,
+      reviewPosted: false,
+      review_summary: "",
+      review_description: "",
+      reviewer_rating: 0
     };
   }
+
+  reviewSummaryChangeHandler = e => {
+    this.setState({ review_summary: e.target.value });
+  };
+  reviewDescriptionChangeHandler = e => {
+    this.setState({ review_description: e.target.value });
+  };
+  ratingChangeHandler = e => {
+    this.setState({ reviewer_rating: parseInt(e.target.value) });
+  };
+
+  submitReview = () => {
+    let REVIEW_HOST_ELB = "ELB1-1383213972.us-west-2.elb.amazonaws.com";
+    let PORT = 3000;
+    let data = {
+      ItemName: this.state.item_name,
+      Reviews: [
+        {
+          ReviewerName: sessionStorage.getItem("username"),
+          ReviewSummary: this.state.review_summary,
+          Review: this.state.review_description,
+          Rating: this.state.reviewer_rating
+        }
+      ]
+    };
+    console.log("req body", data);
+    axios
+      .put(`http://${REVIEW_HOST_ELB}:${PORT}/updateReview`, data)
+      .then(response => {
+        console.log("status:", response.status);
+        if (response.status === 200) {
+          this.setState({ reviewPosted: true });
+        }
+        console.log("Response POST Reviews:", response.data[0].Reviews);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   render() {
     console.log("reviews", this.state.reviews);
     let review_list;
@@ -54,13 +98,33 @@ class ItemDetails extends Component {
           </div>
           <div>Description:</div>
           <div className="description">{this.state.item_description}</div>
-          <div className="row">
-            <div className="ratings col-lg-3">
-              <div className="heading">Avg. Ratings</div>
-              <div>{"item.ratings"} / 5</div>
-            </div>
-            <div className="all-reviews col-lg-9">
+          <div>
+            <div className="all-reviews">
               <div className="heading">Customer Reviews</div>
+              Rating:
+              <input
+                min="0"
+                max="5"
+                onChange={this.ratingChangeHandler}
+                type="number"
+              />{" "}
+              / 5
+              <div style={{ width: 500 }} className="form-group">
+                <input
+                  onChange={this.reviewSummaryChangeHandler}
+                  type="input"
+                  placeholder="Review summary"
+                  className="form-control"
+                />
+                <textarea
+                  onChange={this.reviewDescriptionChangeHandler}
+                  placeholder="Review description"
+                  className="form-control"
+                />
+              </div>
+              <button onClick={this.submitReview} className="btn btn-secondary">
+                Submit Review
+              </button>
               {review_list}
             </div>
           </div>
@@ -78,6 +142,14 @@ class ItemDetails extends Component {
       .then(response => {
         if (response.status === 204) {
           this.setState({ reviewStatus: false });
+          let data = {
+            ItemName: this.state.item_name,
+            Reviews: []
+          };
+          axios
+            .post(`http://${REVIEW_HOST_ELB}:${PORT}/postReview`, data)
+            .then(response => console.log("POST Review", response.status))
+            .catch(err => console.log(err));
         }
         console.log("status:", response.status);
         console.log("Status Code GET Reviews:", response.data[0].Reviews);
