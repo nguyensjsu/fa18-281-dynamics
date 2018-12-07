@@ -35,7 +35,7 @@ var mongodb_collection = "reviews"
 // API Routes
 func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
-	mx.HandleFunc("/getReviews", getReviewsHandler(formatter)).Methods("GET")
+	mx.HandleFunc("/getReviews/{itemName}", getReviewsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/postReview", postReviewHandler(formatter)).Methods("POST")
 	mx.HandleFunc("/updateReview", updateReviewHandler(formatter)).Methods("PUT")
 	mx.HandleFunc("/deleteReview", deleteReviewHandler(formatter)).Methods("DELETE")
@@ -53,6 +53,10 @@ func pingHandler(formatter *render.Render) http.HandlerFunc {
 func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
+		params := mux.Vars(req)
+		var ItemName string = params["itemName"]
+		fmt.Println( "Item Name: ", ItemName )
+
 		session, err := mgo.Dial(mongodb_server)
 		if err != nil {
 			panic(err)
@@ -66,12 +70,12 @@ func getReviewsHandler(formatter *render.Render) http.HandlerFunc {
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_collection)
 		var results []Review
-		err = c.Find(bson.M{}).All(&results)
+		err = c.Find(bson.M{"itemname": ItemName}).All(&results)
 		if err != nil {
 			log.Fatal(err)
 		}
 		fmt.Println(results)
-		if results != nil {
+		if len(results) > 0 {
 			formatter.JSON(w, http.StatusOK, results)
 		}else{
 			formatter.JSON(w, http.StatusNoContent, struct{ Response string }{"No reviews found for the given ID"})
@@ -107,7 +111,7 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 			fmt.Println("Error while adding reviews: ", err)
 			formatter.JSON(w, http.StatusInternalServerError, struct{ Response error }{err})
 		} else {
-			formatter.JSON(w, http.StatusNoContent, struct{ Response string }{"Review added"})
+			formatter.JSON(w, http.StatusOK, struct{ Response string }{"Review added"})
 		}
 	}
 }
