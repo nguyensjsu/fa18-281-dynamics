@@ -37,7 +37,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/getReviews", getReviewsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/postReview", postReviewHandler(formatter)).Methods("POST")
-	//mx.HandleFunc("/updateReview", updateReviewHandler(formatter)).Methods("PUT")
+	mx.HandleFunc("/updateReview", updateReviewHandler(formatter)).Methods("PUT")
 	//mx.HandleFunc("/deleteReview", deleteReviewHandler(formatter)).Methods("DELETE")
 
 }
@@ -107,14 +107,14 @@ func postReviewHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
-/*
+
 // API Update a Review Handler.
 func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		var m Review
 		_ = json.NewDecoder(req.Body).Decode(&m)
-		fmt.Println("Review is: ", m.Review)
+		fmt.Println("Review is: ", m.ItemName, " " , "Reviews", m.Reviews)
 		session, err := mgo.Dial(mongodb_server)
 		if err != nil {
 			panic(err)
@@ -129,11 +129,9 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 		c := session.DB(mongodb_database).C(mongodb_collection)
 
 		query := bson.M{
-			"_id" : m.Id,
-			"itemid" : m.ItemId,
-			"userid" : m.UserId,
+			"itemname": m.ItemName,
 		}
-		change := bson.M{"$set": bson.M{ "review" : m.Review}}
+		change := bson.M{"$push": bson.M{ "reviews" : bson.M{"$each": m.Reviews }}}
 		err = c.Update(query, change)
 
 		if err != nil {
@@ -144,6 +142,7 @@ func updateReviewHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
+/*
 // API Delete a Review Handler.
 func deleteReviewHandler(formatter *render.Render) http.HandlerFunc {
 
