@@ -125,6 +125,7 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
+
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_purchase_collection)
@@ -137,10 +138,14 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 				t.Items,
 				t.PaymentInfo}
 		err = c.Insert(entry)
+
 		if err != nil {
 			fmt.Println("Error while inserting purchase: ", err)
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchase added"})
+			jData, _ := json.Marshal(entry)
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jData)
 		}
 	}
 }
@@ -167,7 +172,7 @@ func getPaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 		var purchases []bson.M
 		err = c.Find(bson.M{"user":t.Username}).All(&purchases)
 		if err != nil {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases from this user"})
+			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No purchases from this user"})
 		} else {
 			fmt.Println("All purchases: ", purchases)
 			formatter.JSON(w, http.StatusOK, purchases)
@@ -261,7 +266,7 @@ func getWalletHandler(formatter *render.Render) http.HandlerFunc {
 			fmt.Println("Error searching DB for wallet: ", err)
 		} else {
 			if (wallet == nil) {
-				formatter.JSON(w, http.StatusOK, struct{ Test string }{"No wallet for this user"})
+				formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No wallet for this user"})
 			} else {
 				fmt.Println("Wallet: ", wallet)
 				formatter.JSON(w, http.StatusOK, wallet)
@@ -298,7 +303,10 @@ func addWalletHandler(formatter *render.Render) http.HandlerFunc {
 		if err != nil {
 			fmt.Println("Error while inserting wallet: ", err)
 		} else {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Wallet added"})
+			jData, _ := json.Marshal(entry)
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(jData)
 		}
 	}
 }
