@@ -143,12 +143,19 @@ class Cart extends Component {
           <div className="total-row row">
             <span className="col-lg-10" />
             <span className="col-lg-2">
-              <button
-                onClick={this.update}
+              <Link
+                to={{
+                  pathname: "/payment",
+                  state: {
+                    cart: this.state.cart,
+                    cart_total: this.state.cart_total,
+                    item_count: this.state.itemCount
+                  }
+                }}
                 className="btn btn-block btn-login rounded-0"
               >
                 Place Order
-              </button>
+              </Link>
             </span>
           </div>
         </div>

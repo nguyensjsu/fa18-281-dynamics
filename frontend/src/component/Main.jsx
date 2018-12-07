@@ -9,6 +9,7 @@ import Cart from "./Cart";
 import Orders from "./Orders";
 import HomePage from "./HomePage";
 import Wallet from "./Wallet/index.jsx";
+import Payment from "./Payment";
 
 //Create a Main Component
 class Main extends Component {
@@ -25,6 +26,7 @@ class Main extends Component {
         <Route path="/cart" exact component={Cart} />
         <Route path="/orders" exact component={Orders} />
         <Route path="/wallet" exact component={Wallet} />
+        <Route path="/payment" exact component={Payment} />
       </div>
     );
   }
