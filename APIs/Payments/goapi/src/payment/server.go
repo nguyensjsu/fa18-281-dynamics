@@ -63,7 +63,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/ping", pingHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/payments", getPaymentsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/payment", paymentHandler(formatter)).Methods("POST")
-	mx.HandleFunc("/payments/user", getPaymentsByUserHandler(formatter)).Methods("GET")
+	mx.HandleFunc("/payments/{username}", getPaymentsByUserHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/payment/delete/id", deletePaymentByIdHandler(formatter)).Methods("DELETE")
 	mx.HandleFunc("/payments/delete/user", deletePaymentsByUserHandler(formatter)).Methods("DELETE")
 	mx.HandleFunc("/wallet/{username}", getWalletHandler(formatter)).Methods("GET")
@@ -150,23 +150,20 @@ func paymentHandler(formatter *render.Render) http.HandlerFunc {
 func getPaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
-		decoder := json.NewDecoder(req.Body)
-		var t Purchase
-		err := decoder.Decode(&t)
-		if err != nil {
-			fmt.Println("Error parsing the request's body: ", err)
-		}
-
+		params := mux.Vars(req)
+		var username string = params["username"]
 		session, err := mgo.Dial(mongodb_server)
+
 		if err != nil {
 			panic(err)
 		}
+
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_purchase_collection)
 
 		var purchases []bson.M
-		err = c.Find(bson.M{"user":t.Username}).All(&purchases)
+		err = c.Find(bson.M{"username":username}).All(&purchases)
 		if (err != nil || purchases == nil){
 			formatter.JSON(w, http.StatusOK, struct{ Result string }{"No purchases from this user"})
 		} else {
@@ -247,6 +244,7 @@ func getWalletHandler(formatter *render.Render) http.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
+
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_wallet_collection)
