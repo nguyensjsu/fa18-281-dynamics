@@ -36,8 +36,25 @@ class Payment extends Component {
       items: this.state.cart,
       cart_total: this.state.cart_total
     };
+
+    // process payment
     axios
       .post(`http://${PAYMENT_HOST_ELB}:${PORT}/payment`, data)
+      .then(response => {
+        console.log("Status Code POST Wallet:", response.status);
+        console.log("response from POST Wallet:", response);
+      });
+
+    // update inventory
+    let INVENTORY_HOST_ELB =
+      "dockerhost-elb-1477116839.us-west-2.elb.amazonaws.com";
+    data = {
+      username: sessionStorage.getItem("username"),
+      items: this.state.cart,
+      cart_total: this.state.cart_total
+    };
+    axios
+      .put(`http://${INVENTORY_HOST_ELB}:${PORT}/inventory/update`, data)
       .then(response => {
         console.log("Status Code POST Wallet:", response.status);
         console.log("response from POST Wallet:", response);

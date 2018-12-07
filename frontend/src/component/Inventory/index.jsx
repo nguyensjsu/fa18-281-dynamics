@@ -7,32 +7,7 @@ class Inventory extends Component {
   constructor() {
     super();
     this.state = {
-      inventory: [
-        {
-          id: 1,
-          item_name: "Cereals",
-          item_rate: 10.95,
-          item_inventory: 53,
-          item_quantity: 0,
-          item_subtotal: 0
-        },
-        {
-          id: 2,
-          item_name: "Bread",
-          item_rate: 3.99,
-          item_inventory: 11,
-          item_quantity: 0,
-          item_subtotal: 0
-        },
-        {
-          id: 3,
-          item_name: "Milk",
-          item_rate: 3.16,
-          item_inventory: 20,
-          item_quantity: 0,
-          item_subtotal: 0
-        }
-      ],
+      inventory: [],
       cart_total: 0,
       item_count: 0,
       addedToCart: false
@@ -42,9 +17,10 @@ class Inventory extends Component {
   addToCart = () => {
     let CART_HOST_ELB = "oregonELB-875160293.us-west-2.elb.amazonaws.com";
     let PORT = 3000;
+    let cart = this.state.inventory.filter(item => item.item_quantity > 0);
     let data = {
       username: sessionStorage.getItem("username"),
-      items: this.state.inventory
+      items: cart
     };
     axios
       .post(`http://${CART_HOST_ELB}:${PORT}/cart/add`, data)
@@ -66,7 +42,7 @@ class Inventory extends Component {
   quantityChangeHandler = (e, id) => {
     let inventory = this.state.inventory;
     for (let item of inventory) {
-      if (item.id === id) {
+      if (item.item_id === id) {
         if (e.target.value <= item.item_inventory) {
           item.item_quantity = parseInt(e.target.value);
           item.item_subtotal = parseFloat(
@@ -102,7 +78,7 @@ class Inventory extends Component {
   render() {
     let item_list = this.state.inventory.map(item => {
       return (
-        <tr key={item.id}>
+        <tr key={item.item_id}>
           <td className="item name col-lg-4">
             <Link to="">{item.item_name}</Link>
           </td>
@@ -113,7 +89,7 @@ class Inventory extends Component {
               value={item.item_quantity}
               min="0"
               max={item.item_inventory}
-              onChange={e => this.quantityChangeHandler(e, item.id)}
+              onChange={e => this.quantityChangeHandler(e, item.item_id)}
               type="number"
             />
           </td>
@@ -173,6 +149,24 @@ class Inventory extends Component {
         </div>
       </React.Fragment>
     );
+  }
+
+  componentDidMount() {
+    let INVENTORY_GOAPI_ELB =
+      "http://dockerhost-elb-1477116839.us-west-2.elb.amazonaws.com";
+    let PORT = 3000;
+    axios
+      .get(`${INVENTORY_GOAPI_ELB}:${PORT}/inventory`)
+      .then(response => {
+        console.log("Status Code : ", response.status);
+        if (response.status === 200) {
+          console.log("response data:", response);
+          this.setState({ inventory: response.data });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 }
 
