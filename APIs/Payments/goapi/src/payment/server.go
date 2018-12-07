@@ -203,7 +203,7 @@ func deletePaymentByIdHandler(formatter *render.Render) http.HandlerFunc {
 		err = c.Remove(bson.M{"_id":t.Id})
 
 		if err != nil {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchase with this id"})
+			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No purchase with this id"})
 		} else {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchase deleted"})
 		}
@@ -232,7 +232,7 @@ func deletePaymentsByUserHandler(formatter *render.Render) http.HandlerFunc {
 
 		_, err = c.RemoveAll(bson.M{"username":t.Username})
 		if err != nil {
-			formatter.JSON(w, http.StatusOK, struct{ Test string }{"No purchases from this user"})
+			formatter.JSON(w, http.StatusNoContent, struct{ Test string }{"No purchases from this user"})
 		} else {
 			formatter.JSON(w, http.StatusOK, struct{ Test string }{"Purchases deleted"})
 		}
@@ -349,7 +349,11 @@ func addMoneyToWalletHandler(formatter *render.Render) http.HandlerFunc {
 				log.Fatal(err)
 	        } else {
 				fmt.Print("Wallet now has $",newAmount,"\n")
-				formatter.JSON(w, http.StatusOK, struct{ Test string }{"Wallet amount updated"})
+				_ = c.Find(bson.M{"username" : body.Username}).One(&currentWallet)
+				jData, _ := json.Marshal(currentWallet)
+				w.WriteHeader(http.StatusOK)
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(jData)
 	        }
 		}
 	}
@@ -393,7 +397,11 @@ func payWalletHandler(formatter *render.Render) http.HandlerFunc {
 				log.Fatal(err)
 	        } else {
 				fmt.Print("Wallet now has $",newAmount,"\n")
-				formatter.JSON(w, http.StatusOK, struct{ Test string }{"Wallet amount updated"})
+				_ = c.Find(bson.M{"username" : body.Username}).One(&currentWallet)
+				jData, _ := json.Marshal(currentWallet)
+				w.WriteHeader(http.StatusOK)
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(jData)
 	        }
 		}
 	}
