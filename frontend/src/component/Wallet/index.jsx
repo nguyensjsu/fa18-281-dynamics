@@ -20,7 +20,8 @@ class Wallet extends Component {
   };
 
   addMoney = e => {
-    let PAYMENT_HOST_ELB = "payments-1051217824.us-west-2.elb.amazonaws.com";
+    let PAYMENT_HOST_ELB =
+      "Payments-EKS-2070687438.us-west-2.elb.amazonaws.com";
     let PORT = 3000;
     let data = {
       username: sessionStorage.getItem("username"),
@@ -116,7 +117,7 @@ class Wallet extends Component {
                   </div>
                   <div className="form-group">
                     <input
-                      type="password"
+                      type="text"
                       className="form-control form-control-lg rounded-0"
                       placeholder="Billing Address"
                     />
@@ -147,7 +148,8 @@ class Wallet extends Component {
   }
 
   componentDidMount() {
-    let PAYMENT_HOST_ELB = "payments-1051217824.us-west-2.elb.amazonaws.com";
+    let PAYMENT_HOST_ELB =
+      "Payments-EKS-2070687438.us-west-2.elb.amazonaws.com";
     let PORT = 3000;
     let username = sessionStorage.getItem("username");
     axios

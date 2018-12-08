@@ -16,7 +16,8 @@ class Payment extends Component {
   }
 
   pay = () => {
-    let PAYMENT_HOST_ELB = "payments-1051217824.us-west-2.elb.amazonaws.com";
+    let PAYMENT_HOST_ELB =
+      "Payments-EKS-2070687438.us-west-2.elb.amazonaws.com";
     let PORT = 3000;
     let data = {
       username: sessionStorage.getItem("username"),
