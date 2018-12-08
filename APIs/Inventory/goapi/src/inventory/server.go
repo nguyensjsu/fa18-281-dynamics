@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/negroni"
+	"github.com/rs/cors"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
 	"gopkg.in/mgo.v2"
@@ -20,16 +21,6 @@ var mongodb_server = "mongodb://admin:admin@10.0.5.148:27017,10.0.6.227:27017,10
 var mongodb_database = "inventory"
 var mongodb_collection = "InventoryItem"
 
-func NewServer() *negroni.Negroni {
-	formatter := render.New(render.Options{
-		IndentJSON: true,
-	})
-	n := negroni.Classic()
-	mx := mux.NewRouter()
-	initRoutes(mx, formatter)
-	n.UseHandler(mx)
-	return n
-}
 
 // API routes
 func initRoutes(mx *mux.Router, formatter *render.Render) {
@@ -39,6 +30,23 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/inventory/update", updateInventoryHandler(formatter)).Methods("PUT")
 	mx.HandleFunc("/inventory/delete/item_name", deleteInventoryByItem(formatter)).Methods("DELETE")
 	mx.HandleFunc("/inventory/delete", deleteInventoryHandler(formatter)).Methods("DELETE")
+}
+
+func NewServer() *negroni.Negroni {
+	formatter := render.New(render.Options{
+		IndentJSON: true,
+	})
+		corsObj := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"},
+        AllowedMethods: []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+        AllowedHeaders: []string{"Accept", "content-type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
+    })
+	n := negroni.Classic()
+	mx := mux.NewRouter()
+	initRoutes(mx, formatter)
+	n.Use(corsObj)
+	n.UseHandler(mx)
+	return n
 }
 
 // API Ping Handler
