@@ -127,7 +127,10 @@ class Inventory extends Component {
               {item_list}
             </tbody>
           </table>
-          <div className="total-row row">
+          <div
+            style={{ backgroundColor: "floralwhite" }}
+            className="total-row row"
+          >
             <span className="col-lg-8" />
             <div className="item-count col-lg-2">
               Total Items: {this.state.item_count}
