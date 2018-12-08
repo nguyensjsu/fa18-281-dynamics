@@ -6,15 +6,17 @@ import (
 	"log"
 	http "net/http"
 
-	. "users/dao"
 	. "users/models"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
-var dao = UsersDAO{}
+var mongodb_server1 = "mongodb://admin:admin@54.153.82.51:27017,13.52.93.108:27017,52.9.115.13:27017,50.18.201.231:27017,13.52.91.223:27017"
+var mongodb_database 	= "shayona-store"
+var mongodb_collection 	= "users"
 
 func PingEndPoint(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Shayona Grocery Store API is alive!")
@@ -29,7 +31,20 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user.ID = bson.NewObjectId()
-	if err := dao.Insert(user); err != nil {
+
+	session, err := mgo.Dial(mongodb_server1)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	c := session.DB(mongodb_database).C(mongodb_collection)
+
+	err = c.Insert(user)
+
+	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -38,7 +53,20 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 
 // GET /users - get all user
 func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
-	users, err := dao.FindAll()
+
+	session, err := mgo.Dial(mongodb_server1)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	c := session.DB(mongodb_database).C(mongodb_collection)
+
+	var users []User
+	err = c.Find(bson.M{}).All(&users)
+
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -48,8 +76,22 @@ func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
 
 // GET /users/{username}
 func GetUserEndPoint(w http.ResponseWriter, r *http.Request) {
+
 	params := mux.Vars(r)
-	user, err := dao.FindByUsername(params["username"])
+
+	session, err := mgo.Dial(mongodb_server1)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	c := session.DB(mongodb_database).C(mongodb_collection)
+
+	var user User
+	err = c.Find(bson.M{"username": params["username"]}).One(&user)
+
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Username")
 		return
@@ -65,7 +107,19 @@ func DeleteUserEndPoint(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	if err := dao.DeleteUser(user.Username); err != nil {
+
+	session, err := mgo.Dial(mongodb_server1)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	c := session.DB(mongodb_database).C(mongodb_collection)
+	err = c.Remove(bson.M{"username": user.Username})
+
+	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -81,13 +135,6 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
-}
-
-// Parse the configuration file 'config.toml', and establish a connection to DB
-func init() {
-	dao.Server = "mongodb://admin:admin@54.153.82.51:27017,13.52.93.108:27017,52.9.115.13:27017,50.18.201.231:27017,13.52.91.223:27017"
-	dao.Database = "shayona-store"
-	dao.Connect()
 }
 
 func main() {
