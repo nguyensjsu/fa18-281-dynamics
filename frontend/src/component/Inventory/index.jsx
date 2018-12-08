@@ -80,7 +80,9 @@ class Inventory extends Component {
       return (
         <tr key={item.item_id}>
           <td className="item name col-lg-4">
-            <Link to="">{item.item_name}</Link>
+            <Link to={{ pathname: "/itemdetails", state: item }}>
+              {item.item_name}
+            </Link>
           </td>
           <td className="item rate col-lg-2">${item.item_rate}</td>
           <td className="item inventory col-lg-2">{item.item_inventory}</td>
