@@ -15,25 +15,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type Wallet struct {
-	Username 	string 	`json:"username" bson:"username"`
-	Amount		float64 `json:"wallet_amount" bson:"wallet_amount"`
-}
-
-type Item struct {
-	ItemName		string 	`json:"item_name" bson:"item_name"`
-	ItemQuantity	int 	`json:"item_quantity" bson:"item_quantity"`
-	Rate			float64 `json:"item_rate" bson:"item_rate"`
-}
-
-type Purchase struct {
-	Id 			string 	`json:"_id" bson:"_id"`
-	Username 	string 	`json:"username" bson:"username"`
-	TotalItems 	int 	`json:"item_count" bson:"item_count"`
-	CartTotal 	float64 `json:"cart_total" bson:"cart_total"`
-	Items 		[]Item  `json:"items" bson:"items"`
-}
-
 // MongoDB Config
 var mongodb_server = "admin:cmpe281@10.0.1.207:27017,10.0.1.217:27017,10.0.1.127:27017,10.0.1.157:27017,10.0.1.160:27017"
 var mongodb_database 			= "shayona"
@@ -267,6 +248,7 @@ func getWalletHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
+// API Add Wallet Handler - Create Wallet for a specified user
 func addWalletHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
@@ -287,10 +269,7 @@ func addWalletHandler(formatter *render.Render) http.HandlerFunc {
 		defer session.Close()
 		session.SetMode(mgo.Monotonic, true)
 		c := session.DB(mongodb_database).C(mongodb_wallet_collection)
-
 		entry := Wallet{body.Username, body.Amount}
-		// TODO: CHECK IF USER ALREADY HAS WALLET
-
 		err = c.Insert(entry)
 
 		if err != nil {
@@ -304,6 +283,7 @@ func addWalletHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
+// API Add Money to Wallet Handler - Add money to the wallet for a specified user
 func addMoneyToWalletHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
@@ -352,6 +332,7 @@ func addMoneyToWalletHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
+// API Pay Wallet Handler - Pay using the wallet for a specified user
 func payWalletHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
