@@ -139,3 +139,27 @@ Responsibilities:
 2. Host Front end on Heroku
 3. try scaling of frontend
 
+# **Final Demo for class December 7,2018**
+
+**Location:** SJSU Student Union</br>
+**Time:** 7:00PM - 10:00PM</br>
+
+**Attendees:**
+
+1. Shivam Waghela
+2. Pavan Kumar Shekar
+3. Ujjval Soni
+4. Clifton Francis
+5. Prajwal Venkatesh
+
+
+## Final Integration:
+1. Deploy front end on AWS with scaling
+2. Get EKS working
+3. Demo of end to end
+4. Bug Fixes
+5. Final ppt presentation
+
+
+
+
