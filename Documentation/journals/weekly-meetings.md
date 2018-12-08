@@ -103,3 +103,39 @@ Responsibilities:
 2. AWS-API integration
 3. DB partition - make sure APIs still work 
 4. locally deploy APIS on docker
+
+
+# **December 5, 2018**
+
+**Location:** SJSU Student Union</br>
+**Time:** 6:00PM - 8:00PM</br>
+
+**Attendees:**
+
+1. Shivam Waghela
+2. Pavan Kumar Shekar
+3. Ujjval Soni
+4. Clifton Francis
+5. Prajwal Venkatesh
+
+
+## Key Discussion Points
+1. End to end UI
+2. Dockerize on AWS
+2. Wow factor implementation/ EKS
+
+
+## Decisions
+
+1. Dockerize on AWS
+2. Test with DB cluster
+3. Cart/ reviews add and delete
+4. Integrate Users/Inventory/Cart
+
+
+
+## Action Items
+1. Dockerize the APIs
+2. Host Front end on Heroku
+3. try scaling of frontend
+
