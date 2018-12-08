@@ -144,9 +144,11 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 func getServer(username string) string {
 	if (strings.HasPrefix(username, "A") || strings.HasPrefix(username, "a")) {
 		// Ujjval's server
+		fmt.Println("Server 1")
 		return mongodb_server1
 	} else {
 		// Shivam's server
+		fmt.Println("Server 2")
 		return mongodb_server2
 	}
 }
