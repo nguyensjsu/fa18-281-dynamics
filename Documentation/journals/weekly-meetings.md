@@ -68,3 +68,38 @@ Responsibilities:
 2. Design the API and deploy on ec2 instances.
 3. Connect and test your API with the database cluster. 
 4. Dockerize the API after successful testing on ec2.
+
+# **December 3, 2018**
+
+**Location:** Google Hangouts</br>
+**Time:** 7:30PM - 8:30PM</br>
+
+**Attendees:**
+
+1. Shivam Waghela
+2. Pavan Kumar Shekar
+3. Ujjval Soni
+4. Clifton Francis
+5. Prajwal Venkatesh
+
+
+## Key Discussion Points
+1. API integrations
+2. Frontend Design
+2. Wow factor discussion
+
+
+## Decisions
+
+1. API integration has to start
+2. Test individual microservices.
+3. User login has to be implemented
+4. interdependent micro services to be in line in terms of data received and responses
+
+
+
+## Action Items
+1. front end for Users
+2. AWS-API integration
+3. DB partition - make sure APIs still work 
+4. locally deploy APIS on docker
