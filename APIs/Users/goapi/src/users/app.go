@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	http "net/http"
 
 	. "users/models"
@@ -13,8 +14,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
-
-var mongodb_server1 = "mongodb://admin:admin@54.153.82.51:27017,13.52.93.108:27017,52.9.115.13:27017,50.18.201.231:27017,13.52.91.223:27017"
+var mongodb_server1 = "mongodb://admin:cmpe281@52.53.82.217:27017,54.177.200.126:27017,13.52.64.28:27017/groupproject?authSource=admin&replicaSet=cmpe281"
+var mongodb_server2 = "mongodb://admin:admin@54.153.82.51:27017,13.52.93.108:27017,52.9.115.13:27017,50.18.201.231:27017,13.52.91.223:27017"
 var mongodb_database 	= "shayona-store"
 var mongodb_collection 	= "users"
 
@@ -30,9 +31,10 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	user.ID = bson.NewObjectId()
 
-	session, err := mgo.Dial(mongodb_server1)
+	user.ID = bson.NewObjectId()
+	server := getServer(user.Username)
+	session, err := mgo.Dial(server)
 
 	if err != nil {
 		panic(err)
@@ -54,7 +56,7 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 // GET /users - get all user
 func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
 
-	session, err := mgo.Dial(mongodb_server1)
+	session, err := mgo.Dial(mongodb_server2)
 
 	if err != nil {
 		panic(err)
@@ -72,14 +74,15 @@ func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondWithJson(w, http.StatusOK, users)
+
 }
 
 // GET /users/{username}
 func GetUserEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
-
-	session, err := mgo.Dial(mongodb_server1)
+	server := getServer(params["username"])
+	session, err := mgo.Dial(server)
 
 	if err != nil {
 		panic(err)
@@ -108,7 +111,8 @@ func DeleteUserEndPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, err := mgo.Dial(mongodb_server1)
+	server := getServer(user.Username)
+	session, err := mgo.Dial(server)
 
 	if err != nil {
 		panic(err)
@@ -135,6 +139,16 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func getServer(username string) string {
+	if (strings.HasPrefix(username, "A") || strings.HasPrefix(username, "a")) {
+		// Ujjval's server
+		return mongodb_server1
+	} else {
+		// Shivam's server
+		return mongodb_server2
+	}
 }
 
 func main() {
