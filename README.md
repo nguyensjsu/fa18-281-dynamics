@@ -16,9 +16,9 @@ Team Hackathon Project repository for Fall 2018 CMPE 281 course in SJSU with pro
 
 The repo has the following structure:
 
-- journals - Weekly meetings, progress, and challenges
-- doc - All project documentation and diagrams
-- code - Project code
+- documentation - All project documentation, weekly meetings, progress and diagrams
+- APIs - Go API source code
+- frontend - React source code
 
 ## Steps to Run the App
 
@@ -34,5 +34,24 @@ Run the React Server
 
     npm start
 
-
 Technologies used: ReactJS, Go, Riak KV database, MongoDB database, AWS , Heroku.
+
+
+
+## EKS
+
+![architecture](Documentation/kubernetes/screenshots/amazon-eks.PNG)
+
+EKS Cluster
+
+- 2 worker nodes
+- Payment deployment
+  - Creates 2 replicas of payment API containers
+  - Requests limit set to 250m (1/4 of a logical core)
+- Payment Service
+  - Exposes our deployment using a NodePort
+- Metrics-server deployed to monitor pod resource utilization
+- Horizontal Pod Autoscaler used to scale pods based on cpu utilization
+  - New pods will spawn when pod reaches 50% cpu utilization of request limit
+  - Mininum number of pods: 2
+  - Maximum number of pods: 8
