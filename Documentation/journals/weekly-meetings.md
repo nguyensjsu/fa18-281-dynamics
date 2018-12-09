@@ -68,3 +68,98 @@ Responsibilities:
 2. Design the API and deploy on ec2 instances.
 3. Connect and test your API with the database cluster. 
 4. Dockerize the API after successful testing on ec2.
+
+# **December 3, 2018**
+
+**Location:** Google Hangouts</br>
+**Time:** 7:30PM - 8:30PM</br>
+
+**Attendees:**
+
+1. Shivam Waghela
+2. Pavan Kumar Shekar
+3. Ujjval Soni
+4. Clifton Francis
+5. Prajwal Venkatesh
+
+
+## Key Discussion Points
+1. API integrations
+2. Frontend Design
+2. Wow factor discussion
+
+
+## Decisions
+
+1. API integration has to start
+2. Test individual microservices.
+3. User login has to be implemented
+4. interdependent micro services to be in line in terms of data received and responses
+
+
+
+## Action Items
+1. front end for Users
+2. AWS-API integration
+3. DB partition - make sure APIs still work 
+4. locally deploy APIS on docker
+
+
+# **December 5, 2018**
+
+**Location:** SJSU Student Union</br>
+**Time:** 6:00PM - 8:00PM</br>
+
+**Attendees:**
+
+1. Shivam Waghela
+2. Pavan Kumar Shekar
+3. Ujjval Soni
+4. Clifton Francis
+5. Prajwal Venkatesh
+
+
+## Key Discussion Points
+1. End to end UI
+2. Dockerize on AWS
+2. Wow factor implementation/ EKS
+
+
+## Decisions
+
+1. Dockerize on AWS
+2. Test with DB cluster
+3. Cart/ reviews add and delete
+4. Integrate Users/Inventory/Cart
+
+
+
+## Action Items
+1. Dockerize the APIs
+2. Host Front end on Heroku
+3. try scaling of frontend
+
+# **Final Demo for class December 7,2018**
+
+**Location:** SJSU Student Union</br>
+**Time:** 7:00PM - 10:00PM</br>
+
+**Attendees:**
+
+1. Shivam Waghela
+2. Pavan Kumar Shekar
+3. Ujjval Soni
+4. Clifton Francis
+5. Prajwal Venkatesh
+
+
+## Final Integration:
+1. Deploy front end on AWS with scaling
+2. Get EKS working
+3. Demo of end to end
+4. Bug Fixes
+5. Final ppt presentation
+
+
+
+

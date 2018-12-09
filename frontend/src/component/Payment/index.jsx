@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import uniqid from "uniqid";
 
@@ -10,12 +10,14 @@ class Payment extends Component {
       cart: this.props.location.state.cart,
       cart_total: this.props.location.state.cart_total,
       item_count: this.props.location.state.item_count,
-      wallet: 0
+      wallet: 0,
+      paymentProcessed: false
     };
   }
 
   pay = () => {
-    let PAYMENT_HOST_ELB = "payments-1051217824.us-west-2.elb.amazonaws.com";
+    let PAYMENT_HOST_ELB =
+      "Payments-EKS-2070687438.us-west-2.elb.amazonaws.com";
     let PORT = 3000;
     let data = {
       username: sessionStorage.getItem("username"),
@@ -58,6 +60,9 @@ class Payment extends Component {
       .then(response => {
         console.log("Status Code POST Wallet:", response.status);
         console.log("response from POST Wallet:", response);
+
+        // redirect to orders
+        this.setState({ paymentProcessed: true });
       });
   };
 
@@ -76,6 +81,7 @@ class Payment extends Component {
     });
     return (
       <React.Fragment>
+        {this.state.paymentProcessed && <Redirect to="/orders" />}
         <div className="container">
           <div id="title">
             <h2>Payment</h2>
@@ -99,7 +105,10 @@ class Payment extends Component {
                 {item_list}
               </tbody>
             </table>
-            <div className="total-row row">
+            <div
+              style={{ backgroundColor: "floralwhite" }}
+              className="total-row row"
+            >
               <span className="col-lg-8" />
               <div className="item-count col-lg-2">
                 Total Items: {this.state.item_count}
@@ -129,7 +138,8 @@ class Payment extends Component {
   }
 
   componentDidMount() {
-    let PAYMENT_HOST_ELB = "payments-1051217824.us-west-2.elb.amazonaws.com";
+    let PAYMENT_HOST_ELB =
+      "Payments-EKS-2070687438.us-west-2.elb.amazonaws.com";
     let PORT = 3000;
     let username = sessionStorage.getItem("username");
     axios

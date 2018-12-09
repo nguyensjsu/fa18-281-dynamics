@@ -4,17 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 	http "net/http"
 
-	. "users/dao"
 	. "users/models"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
-
-var dao = UsersDAO{}
+var mongodb_server1 = "mongodb://admin:cmpe281@52.53.82.217:27017,54.177.200.126:27017,13.52.64.28:27017/groupproject?authSource=admin&replicaSet=cmpe281"
+var mongodb_server2 = "mongodb://admin:admin@54.153.82.51:27017,13.52.93.108:27017,52.9.115.13:27017,50.18.201.231:27017,13.52.91.223:27017"
+var mongodb_database 	= "shayona-store"
+var mongodb_collection 	= "users"
 
 func PingEndPoint(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Shayona Grocery Store API is alive!")
@@ -28,8 +31,22 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
+
 	user.ID = bson.NewObjectId()
-	if err := dao.Insert(user); err != nil {
+	server := getServer(user.Username)
+	session, err := mgo.Dial(server)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	c := session.DB(mongodb_database).C(mongodb_collection)
+
+	err = c.Insert(user)
+
+	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -38,18 +55,46 @@ func CreateUserEndPoint(w http.ResponseWriter, r *http.Request) {
 
 // GET /users - get all user
 func GetAllUsersEndPoint(w http.ResponseWriter, r *http.Request) {
-	users, err := dao.FindAll()
+
+	session, err := mgo.Dial(mongodb_server2)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	c := session.DB(mongodb_database).C(mongodb_collection)
+
+	var users []User
+	err = c.Find(bson.M{}).All(&users)
+
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	respondWithJson(w, http.StatusOK, users)
+
 }
 
 // GET /users/{username}
 func GetUserEndPoint(w http.ResponseWriter, r *http.Request) {
+
 	params := mux.Vars(r)
-	user, err := dao.FindByUsername(params["username"])
+	server := getServer(params["username"])
+	session, err := mgo.Dial(server)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	c := session.DB(mongodb_database).C(mongodb_collection)
+
+	var user User
+	err = c.Find(bson.M{"username": params["username"]}).One(&user)
+
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Username")
 		return
@@ -65,7 +110,20 @@ func DeleteUserEndPoint(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	if err := dao.DeleteUser(user.Username); err != nil {
+
+	server := getServer(user.Username)
+	session, err := mgo.Dial(server)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer session.Close()
+	session.SetMode(mgo.Monotonic, true)
+	c := session.DB(mongodb_database).C(mongodb_collection)
+	err = c.Remove(bson.M{"username": user.Username})
+
+	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -83,11 +141,16 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(response)
 }
 
-// Parse the configuration file 'config.toml', and establish a connection to DB
-func init() {
-	dao.Server = "mongodb://admin:admin@54.153.82.51:27017,13.52.93.108:27017,52.9.115.13:27017,50.18.201.231:27017,13.52.91.223:27017"
-	dao.Database = "shayona-store"
-	dao.Connect()
+func getServer(username string) string {
+	if (strings.HasPrefix(username, "A") || strings.HasPrefix(username, "a")) {
+		// Ujjval's server
+		fmt.Println("Server 1")
+		return mongodb_server1
+	} else {
+		// Shivam's server
+		fmt.Println("Server 2")
+		return mongodb_server2
+	}
 }
 
 func main() {
