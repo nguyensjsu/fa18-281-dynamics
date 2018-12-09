@@ -55,3 +55,18 @@ EKS Cluster
   - New pods will spawn when pod reaches 50% cpu utilization of request limit
   - Mininum number of pods: 2
   - Maximum number of pods: 8
+  
+  
+  ## Website screenshots
+  
+ ![](/screenshots/screenshot-1.png)
+ ![](/screenshots/screenshot-2.png)
+ ![](/screenshots/screenshot-3.png)
+ ![](/screenshots/screenshot-4.png)
+ ![](/screenshots/screenshot-5.png)
+ ![](/screenshots/screenshot-6.png)
+ ![](/screenshots/screenshot-7.png)
+ ![](/screenshots/screenshot-8.png)
+ ![](/screenshots/screenshot-9.png)
+ ![](/screenshots/screenshot-10.png)
+  
